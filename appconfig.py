@@ -1,0 +1,5 @@
+import os
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+SUPABASE_URL = "https://emssmtvvpjkbivgqqwuv.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtc3NtdHZ2cGprYml2Z3Fxd3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzE5MDcsImV4cCI6MjEwMzkwNzkwN30.s1ajaw5qbpQmWdET3YaLlEbJp4J1JjdP--7nX1m31O4"
