@@ -1,4 +1,8 @@
-from fastapi import FastAPI, Form, UploadFile, File
+import os
+import razorpay
+from fastapi import FastAPI, Form, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.services.mains_evaluator import evaluate_mains_submission
 from app.services.csat_solver import solve_csat_question
 from app.services.quiz_syllabus import generate_prelims_quiz, get_syllabus_notes
@@ -6,6 +10,24 @@ from app.services.ocr_service import extract_text_from_file
 from app.db import log_api_activity, log_mains_score, get_score_history
 
 app = FastAPI(title="UPSC AI Engine", version="1.2.0")
+
+# ----------------- CORS MIDDLEWARE -----------------
+# Enables Streamlit Cloud frontend to communicate with Render backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ----------------- RAZORPAY CLIENT SETUP -----------------
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
+razorpay_client = None
+if RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET:
+    razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 @app.get("/")
 def check_health():
@@ -53,13 +75,41 @@ def api_get_notes(topic: str = Form(...)):
 def api_get_scores():
     return {"history": get_score_history()}
 
-@app.post("/api/v1/payment/create-order")
-def create_payment_order(plan_type: str = Form(...)):
-    # Simple order stub for integration testing
-    amount_map = {"pro_monthly": 49900, "token_pack": 19900}  # Amounts in paise
-    return {
-        "status": "created",
-        "order_id": "order_mock_12345",
-        "amount": amount_map.get(plan_type, 49900),
-        "currency": "INR"
+@app.post("/api/v1/payment/create-link")
+def create_payment_link(plan_type: str = Form("pro_monthly")):
+    if not razorpay_client:
+        raise HTTPException(
+            status_code=500, 
+            detail="Razorpay API credentials are missing in Environment Variables."
+        )
+
+    amount_map = {
+        "pro_monthly": 49900,  # ₹499 in paise
+        "token_pack": 19900    # ₹199 in paise
     }
+    
+    amount = amount_map.get(plan_type, 49900)
+
+    try:
+        payment_data = {
+            "amount": amount,
+            "currency": "INR",
+            "accept_partial": False,
+            "description": f"UPSC AI Subscription - {plan_type}",
+            "customer": {
+                "name": "UPSC Aspirant",
+                "email": "user@example.com"
+            },
+            "notify": {"sms": False, "email": False},
+            "reminder_enable": False,
+            "callback_url": "https://upsc-ai.streamlit.app/",  # Replace with your exact Streamlit URL
+            "callback_method": "get"
+        }
+        
+        link_response = razorpay_client.payment_link.create(payment_data)
+        return {
+            "status": "success",
+            "short_url": link_response["short_url"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
