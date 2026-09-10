@@ -62,26 +62,33 @@ if module == "📚 Subject-Wise PYQ Explorer":
                     "year_end": years[1],
                     "exam_type": exam_type
                 }
-                res = requests.get(url, params=params)
+                res = requests.get(url, params=params, timeout=60)
                 
                 if res.status_code == 200:
                     data = res.json().get("data", [])
-                    st.success(f"Found {len(data)} questions for {subject} ({years[0]}–{years[1]})")
-                    
-                    for idx, q in enumerate(data, 1):
-                        with st.expander(f"Q{idx} [{q['year']}] - Topic: {q.get('topic', 'General')}"):
-                            st.write(q["question"])
-                            
-                            if exam_type == "Prelims" and q.get("options"):
-                                opts = q["options"]
-                                for key, val in opts.items():
-                                    st.write(f"**({key})** {val}")
-                            
-                            if st.checkbox("Show Answer & Explanation", key=f"ans_{q['id']}"):
-                                st.info(f"**Correct Answer:** {q.get('correct_option', 'N/A')}")
-                                st.write(f"**Explanation:** {q.get('explanation', 'No detailed explanation available.')}")
+                    if data:
+                        st.success(f"Found {len(data)} questions for {subject} ({years[0]}–{years[1]})")
+                        for idx, q in enumerate(data, 1):
+                            with st.expander(f"Q{idx} [{q['year']}] - Topic: {q.get('topic', 'General')}"):
+                                st.write(q["question"])
+                                
+                                if exam_type == "Prelims" and q.get("options"):
+                                    opts = q["options"]
+                                    for key, val in opts.items():
+                                        st.write(f"**({key})** {val}")
+                                
+                                if st.checkbox("Show Answer & Explanation", key=f"ans_{q['id']}"):
+                                    st.info(f"**Correct Answer:** {q.get('correct_option', 'N/A')}")
+                                    st.write(f"**Explanation:** {q.get('explanation', 'No detailed explanation available.')}")
+                    else:
+                        st.warning("No questions found in database. Make sure you inserted data into Supabase.")
                 else:
-                    st.error("Failed to retrieve questions from server.")
+                    # Renders exact backend exception message
+                    error_msg = res.json().get("detail", res.text)
+                    st.error(f"Backend Error ({res.status_code}): {error_msg}")
+
+            except requests.exceptions.Timeout:
+                st.error("Server connection timed out. Please click 'Load Questions' again.")
             except Exception as e:
                 st.error(f"Connection error: {e}")
 
@@ -106,7 +113,6 @@ elif module == "📚 Syllabus Mastery Tracker":
     st.checkbox("Climate Change COP Declarations")
     st.checkbox("Renewable Energy Targets")
 
-# --- OTHER MODULES ---
 else:
     st.title(module)
     st.info("Module loading...")
