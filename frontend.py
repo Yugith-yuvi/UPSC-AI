@@ -2,7 +2,8 @@ import streamlit as st
 import requests
 import os
 
-BACKEND_URL = os.getenv("BACKEND_URL", "https://upsc-ai-backend.onrender.com")
+# Strip trailing slashes safely to prevent duplicate slashes in routes
+BACKEND_URL = os.getenv("BACKEND_URL", "https://upsc-ai-backend.onrender.com").rstrip("/")
 
 st.set_page_config(page_title="UPSC AI Quest Hub", layout="wide")
 
@@ -55,14 +56,14 @@ if module == "📚 Subject-Wise PYQ Explorer":
     if st.button("Load Questions", type="primary"):
         with st.spinner("Fetching questions..."):
             try:
-                url = f"{BACKEND_URL}/api/v1/pyq/fetch"
+                endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
                 params = {
                     "subject": subject,
                     "year_start": years[0],
                     "year_end": years[1],
                     "exam_type": exam_type
                 }
-                res = requests.get(url, params=params, timeout=60)
+                res = requests.get(endpoint, params=params, timeout=60)
                 
                 if res.status_code == 200:
                     data = res.json().get("data", [])
@@ -83,9 +84,7 @@ if module == "📚 Subject-Wise PYQ Explorer":
                     else:
                         st.warning("No questions found in database. Make sure you inserted data into Supabase.")
                 else:
-                    # Renders exact backend exception message
-                    error_msg = res.json().get("detail", res.text)
-                    st.error(f"Backend Error ({res.status_code}): {error_msg}")
+                    st.error(f"Backend Error ({res.status_code}): {res.text}")
 
             except requests.exceptions.Timeout:
                 st.error("Server connection timed out. Please click 'Load Questions' again.")

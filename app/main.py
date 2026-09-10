@@ -6,6 +6,7 @@ import logging
 
 app = FastAPI(title="UPSC AI Engine", version="1.0.0")
 
+# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,6 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Payment Router
 app.include_router(payment.router)
 
 @app.get("/")
