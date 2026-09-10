@@ -1,12 +1,12 @@
+import logging
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.db import fetch_pyqs
 from app.routers import payment
-import logging
 
 app = FastAPI(title="UPSC AI Engine", version="1.0.0")
 
-# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Payment Router
+# Payment Routes
 app.include_router(payment.router)
 
 @app.get("/")
