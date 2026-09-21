@@ -13,11 +13,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Initialize active page state
+# Initialize Session State Variables
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
-# Handle query parameters for page navigation
+if "theme" not in st.session_state:
+    st.session_state.theme = "Dark"
+
+# Handle query parameters for navigation
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.active_page = query_params["page"]
@@ -26,78 +29,96 @@ def navigate_to(page_name):
     st.session_state.active_page = page_name
     st.query_params["page"] = page_name
 
-# --- MODERN INJECTED CSS FOR DARK DASHBOARD & GLASSMORPHISM ---
-st.markdown("""
+# --- DYNAMIC LIGHT / DARK THEME ENGINE ---
+is_dark = st.session_state.theme == "Dark"
+
+# CSS Variables based on theme selection
+bg_color = "#0b0f19" if is_dark else "#f8fafc"
+text_color = "#f1f5f9" if is_dark else "#0f172a"
+subtext_color = "#94a3b8" if is_dark else "#64748b"
+btn_bg = "rgba(255, 255, 255, 0.08)" if is_dark else "#ffffff"
+btn_border = "rgba(255, 255, 255, 0.15)" if is_dark else "#cbd5e1"
+btn_text = "#38bdf8" if is_dark else "#2563eb"
+btn_hover_bg = "rgba(56, 189, 248, 0.15)" if is_dark else "#f1f5f9"
+stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
+stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
+
+st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
-    /* Dark Mode Core Theme */
-    html, body, [class*="stApp"] {
+    /* Global Dynamic Theme Application */
+    html, body, [class*="stApp"] {{
         font-family: 'Outfit', sans-serif !important;
-        background-color: #0b0f19 !important;
-        color: #f1f5f9 !important;
-    }
+        background-color: {bg_color} !important;
+        color: {text_color} !important;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }}
 
-    /* Clean Header Navigation Button Styling */
-    div[data-testid="column"]:nth-child(1) button {
+    /* Fixed Navigation Buttons Styling */
+    div[data-testid="column"]:nth-child(1) button, 
+    div[data-testid="column"]:nth-child(2) button {{
         height: 42px !important;
         border-radius: 12px !important;
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        color: #38bdf8 !important;
+        background: {btn_bg} !important;
+        border: 1px solid {btn_border} !important;
+        color: {btn_text} !important;
         font-weight: 700 !important;
         backdrop-filter: blur(8px) !important;
-        transition: all 0.2s ease !important;
-    }
-    div[data-testid="column"]:nth-child(1) button:hover {
-        background: rgba(56, 189, 248, 0.15) !important;
-        border-color: #38bdf8 !important;
-        color: #ffffff !important;
+        transition: all 0.25s ease !important;
+    }}
+    
+    div[data-testid="column"]:nth-child(1) button:hover, 
+    div[data-testid="column"]:nth-child(2) button:hover {{
+        background: {btn_hover_bg} !important;
+        border-color: {btn_text} !important;
+        color: {btn_text} !important;
         transform: translateY(-2px) !important;
-    }
+    }}
 
-    /* Hero Text Styling */
-    .hero-glow-title {
+    /* Title Typography */
+    .hero-glow-title {{
         font-size: 2.5rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%);
+        background: {'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)' if is_dark else 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)'};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 2px;
-    }
+    }}
     
-    .hero-sub {
+    .hero-sub {{
         font-size: 1.1rem;
-        color: #94a3b8;
+        color: {subtext_color};
         margin-bottom: 24px;
         font-weight: 500;
-    }
+    }}
 
-    /* Stats Banner Styling */
-    .stat-box {
-        background: rgba(30, 41, 59, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Dynamic Stats Banner */
+    .stat-box {{
+        background: {stat_bg};
+        border: 1px solid {stat_border};
         border-radius: 12px;
         padding: 12px 20px;
         text-align: center;
         backdrop-filter: blur(10px);
-    }
-    .stat-number {
+        box-shadow: {'0 4px 12px rgba(0,0,0,0.03)' if not is_dark else 'none'};
+    }}
+    .stat-number {{
         font-size: 1.3rem;
         font-weight: 800;
-        color: #38bdf8;
-    }
-    .stat-label {
+        color: {btn_text};
+    }}
+    .stat-label {{
         font-size: 0.75rem;
-        color: #64748b;
+        color: {subtext_color};
         text-transform: uppercase;
         letter-spacing: 0.8px;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- TOP NAVIGATION BAR ---
-col_nav1, col_nav2, _ = st.columns([1.2, 1.2, 9.6])
+# --- TOP NAVIGATION BAR WITH THEME TOGGLE ---
+col_nav1, col_nav2, _ , col_toggle = st.columns([1.2, 1.2, 7.2, 2.4])
 
 with col_nav1:
     if st.button("🏠 Home", key="btn_top_home", use_container_width=True):
@@ -123,10 +144,30 @@ with col_nav2:
             navigate_to("Universal Mains Evaluator")
             st.rerun()
 
+with col_toggle:
+    # Mode Switcher Toggle
+    mode_selection = st.radio(
+        "Theme Mode",
+        options=["Dark 🌙", "Light ☀️"],
+        index=0 if is_dark else 1,
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+    selected_theme = "Dark" if "Dark" in mode_selection else "Light"
+    if selected_theme != st.session_state.theme:
+        st.session_state.theme = selected_theme
+        st.rerun()
+
 st.markdown("---")
 
-# Helper function to render neon glassmorphic cards
+# Helper function to render theme-aware card components
 def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page):
+    c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
+    c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
+    c_title = "#f8fafc" if is_dark else "#0f172a"
+    c_desc = "#94a3b8" if is_dark else "#64748b"
+    c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
+
     card_html = f"""
     <!DOCTYPE html>
     <html>
@@ -137,12 +178,12 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
         body {{ font-family: 'Outfit', sans-serif; background: transparent; padding: 6px; }}
         
         .card {{
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: {c_bg};
+            border: 1px solid {c_border};
             border-radius: 18px;
             padding: 22px;
             height: 175px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            box-shadow: {c_shadow};
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
             position: relative;
@@ -184,7 +225,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
         .title {{
             font-size: 1.2rem;
             font-weight: 700;
-            color: #f8fafc;
+            color: {c_title};
             display: flex;
             align-items: center;
             gap: 10px;
@@ -204,7 +245,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
 
         .desc {{
             font-size: 0.88rem;
-            color: #94a3b8;
+            color: {c_desc};
             line-height: 1.5;
             font-weight: 400;
         }}
