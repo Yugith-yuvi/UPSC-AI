@@ -13,14 +13,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Initialize Session State Variables
+# Initialize Session State
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Dark"
 
-# Handle query parameters for navigation
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.active_page = query_params["page"]
@@ -29,17 +28,17 @@ def navigate_to(page_name):
     st.session_state.active_page = page_name
     st.query_params["page"] = page_name
 
-# --- DYNAMIC LIGHT / DARK THEME ENGINE ---
 is_dark = st.session_state.theme == "Dark"
 
-# CSS Variables based on theme selection
+# CSS Variables
 bg_color = "#0b0f19" if is_dark else "#f8fafc"
 text_color = "#f1f5f9" if is_dark else "#0f172a"
 subtext_color = "#94a3b8" if is_dark else "#64748b"
-btn_bg = "rgba(255, 255, 255, 0.08)" if is_dark else "#ffffff"
-btn_border = "rgba(255, 255, 255, 0.15)" if is_dark else "#cbd5e1"
-btn_text = "#38bdf8" if is_dark else "#2563eb"
-btn_hover_bg = "rgba(56, 189, 248, 0.15)" if is_dark else "#f1f5f9"
+
+nav_btn_bg = "#1e293b" if is_dark else "#ffffff"
+nav_btn_border = "#334155" if is_dark else "#cbd5e1"
+nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
+
 stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
@@ -47,36 +46,60 @@ st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
-    /* Global Dynamic Theme Application */
+    /* Global Dynamic Theme */
     html, body, [class*="stApp"] {{
         font-family: 'Outfit', sans-serif !important;
         background-color: {bg_color} !important;
         color: {text_color} !important;
-        transition: background-color 0.3s ease, color 0.3s ease;
     }}
 
-    /* Fixed Navigation Buttons Styling */
-    div[data-testid="column"]:nth-child(1) button, 
-    div[data-testid="column"]:nth-child(2) button {{
+    /* STYLING TOP NAVIGATION BUTTONS (HOME & MENU) */
+    div[data-testid="column"] button {{
+        background-color: {nav_btn_bg} !important;
+        border: 1px solid {nav_btn_border} !important;
+        border-radius: 10px !important;
+        color: {nav_btn_text} !important;
+        font-weight: 600 !important;
         height: 42px !important;
-        border-radius: 12px !important;
-        background: {btn_bg} !important;
-        border: 1px solid {btn_border} !important;
-        color: {btn_text} !important;
-        font-weight: 700 !important;
-        backdrop-filter: blur(8px) !important;
-        transition: all 0.25s ease !important;
-    }}
-    
-    div[data-testid="column"]:nth-child(1) button:hover, 
-    div[data-testid="column"]:nth-child(2) button:hover {{
-        background: {btn_hover_bg} !important;
-        border-color: {btn_text} !important;
-        color: {btn_text} !important;
-        transform: translateY(-2px) !important;
+        box-shadow: none !important;
     }}
 
-    /* Title Typography */
+    div[data-testid="column"] button p {{
+        color: {nav_btn_text} !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+    }}
+
+    div[data-testid="column"] button:hover {{
+        border-color: #38bdf8 !important;
+        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
+    }}
+
+    /* STYLING TOP RIGHT THEME TOGGLE */
+    div[role="radiogroup"] {{
+        background-color: {nav_btn_bg} !important;
+        border: 1px solid {nav_btn_border} !important;
+        border-radius: 10px !important;
+        padding: 4px 8px !important;
+        display: flex !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        height: 42px !important;
+    }}
+
+    div[role="radiogroup"] label {{
+        background: transparent !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+    }}
+
+    div[role="radiogroup"] label p {{
+        color: {nav_btn_text} !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+    }}
+
+    /* Typography */
     .hero-glow-title {{
         font-size: 2.5rem;
         font-weight: 800;
@@ -93,7 +116,6 @@ st.markdown(f"""
         font-weight: 500;
     }}
 
-    /* Dynamic Stats Banner */
     .stat-box {{
         background: {stat_bg};
         border: 1px solid {stat_border};
@@ -101,12 +123,11 @@ st.markdown(f"""
         padding: 12px 20px;
         text-align: center;
         backdrop-filter: blur(10px);
-        box-shadow: {'0 4px 12px rgba(0,0,0,0.03)' if not is_dark else 'none'};
     }}
     .stat-number {{
         font-size: 1.3rem;
         font-weight: 800;
-        color: {btn_text};
+        color: {'#38bdf8' if is_dark else '#2563eb'};
     }}
     .stat-label {{
         font-size: 0.75rem;
@@ -117,8 +138,8 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- TOP NAVIGATION BAR WITH THEME TOGGLE ---
-col_nav1, col_nav2, _ , col_toggle = st.columns([1.2, 1.2, 7.2, 2.4])
+# --- TOP NAVIGATION BAR ---
+col_nav1, col_nav2, _ , col_toggle = st.columns([1.2, 1.2, 6.8, 2.8])
 
 with col_nav1:
     if st.button("🏠 Home", key="btn_top_home", use_container_width=True):
@@ -126,7 +147,7 @@ with col_nav1:
         st.rerun()
 
 with col_nav2:
-    with st.popover("☰ Menu"):
+    with st.popover("☰ Menu", use_container_width=True):
         st.write("**Quick Tools Navigation**")
         if st.button("🎯 Prelims PYQ Quiz", key="m_p1", use_container_width=True):
             navigate_to("Prelims PYQ Quiz")
@@ -145,7 +166,6 @@ with col_nav2:
             st.rerun()
 
 with col_toggle:
-    # Mode Switcher Toggle
     mode_selection = st.radio(
         "Theme Mode",
         options=["Dark 🌙", "Light ☀️"],
