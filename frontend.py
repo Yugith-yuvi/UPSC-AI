@@ -30,7 +30,7 @@ def navigate_to(page_name):
 
 is_dark = st.session_state.theme == "Dark"
 
-# CSS Variables
+# Dynamic Theme Tokens
 bg_color = "#0b0f19" if is_dark else "#f8fafc"
 text_color = "#f1f5f9" if is_dark else "#0f172a"
 subtext_color = "#94a3b8" if is_dark else "#64748b"
@@ -53,53 +53,63 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* STYLING TOP NAVIGATION BUTTONS (HOME & MENU) */
-    div[data-testid="column"] button {{
+    /* FIX 1: STYLING TOP NAVIGATION BUTTONS & POPOVER TRIGGER DIRECTLY */
+    div[data-testid="stPopover"] > button,
+    div[data-testid="stBaseButton-secondary"] {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         border-radius: 10px !important;
         color: {nav_btn_text} !important;
-        font-weight: 600 !important;
         height: 42px !important;
         box-shadow: none !important;
+        transition: all 0.2s ease !important;
     }}
 
-    div[data-testid="column"] button p {{
+    div[data-testid="stPopover"] > button *,
+    div[data-testid="stBaseButton-secondary"] * {{
         color: {nav_btn_text} !important;
-        font-size: 0.95rem !important;
         font-weight: 600 !important;
+        font-size: 0.95rem !important;
     }}
 
-    div[data-testid="column"] button:hover {{
+    div[data-testid="stPopover"] > button:hover,
+    div[data-testid="stBaseButton-secondary"]:hover {{
         border-color: #38bdf8 !important;
         background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* STYLING TOP RIGHT THEME TOGGLE */
-    div[role="radiogroup"] {{
-        background-color: {nav_btn_bg} !important;
+    /* FIX 2: CONVERT THEME RADIO TO CUSTOM TOGGLE BUTTONS (HIDE RADIO DOTS) */
+    div[data-testid="stRadio"] input[type="radio"] {{
+        display: none !important;
+    }}
+
+    div[data-testid="stRadio"] div[role="radiogroup"] {{
+        gap: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+    }}
+
+    div[data-testid="stRadio"] div[role="radiogroup"] > label {{
+        background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         border-radius: 10px !important;
-        padding: 4px 8px !important;
-        display: flex !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        height: 42px !important;
+        padding: 6px 14px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        margin: 0 !important;
     }}
 
-    div[role="radiogroup"] label {{
-        background: transparent !important;
-        padding: 2px 8px !important;
-        border-radius: 6px !important;
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {{
+        border-color: #38bdf8 !important;
     }}
 
-    div[role="radiogroup"] label p {{
+    div[data-testid="stRadio"] div[role="radiogroup"] > label div[data-testid="stMarkdownContainer"] p {{
         color: {nav_btn_text} !important;
         font-weight: 600 !important;
         font-size: 0.85rem !important;
     }}
 
-    /* Typography */
+    /* Typography & Stat Bar */
     .hero-glow-title {{
         font-size: 2.5rem;
         font-weight: 800;
@@ -139,7 +149,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- TOP NAVIGATION BAR ---
-col_nav1, col_nav2, _ , col_toggle = st.columns([1.2, 1.2, 6.8, 2.8])
+col_nav1, col_nav2, _ , col_toggle = st.columns([1.2, 1.2, 6.5, 3.1])
 
 with col_nav1:
     if st.button("🏠 Home", key="btn_top_home", use_container_width=True):
