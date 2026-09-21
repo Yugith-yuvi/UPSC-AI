@@ -16,7 +16,7 @@ st.set_page_config(
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
-# Handle query parameters for page navigation
+# Handle query parameters for seamless page navigation
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.active_page = query_params["page"]
@@ -25,51 +25,48 @@ def navigate_to(page_name):
     st.session_state.active_page = page_name
     st.query_params["page"] = page_name
 
-# --- INJECT CLEAN CUSTOM CSS & HOVER EFFECTS ---
+# --- MODERN INJECTED CSS FOR PREMIUM SAAS LOOK ---
 st.markdown("""
 <style>
-    /* Fix top navigation buttons */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        background-color: #f8fafc !important;
+    }
+
+    /* Header & Navigation Bar Styling */
     div[data-testid="column"]:nth-child(1) button {
-        height: 42px !important;
-        border-radius: 8px !important;
-        background-color: #f0f2f6 !important;
-        border: 1px solid #d0d4dc !important;
-        color: #1e1e1e !important;
-        font-weight: 600 !important;
+        height: 44px !important;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        font-weight: 700 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="column"]:nth-child(1) button:hover {
+        border-color: #6366f1 !important;
+        color: #6366f1 !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* Main Page Titles */
+    .hero-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 4px;
     }
     
-    /* Interactive Card Styles */
-    .feature-card {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 24px;
-        height: 160px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        transition: all 0.25s ease-in-out;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.12);
-        border-color: #ff4b4b;
-    }
-
-    .card-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 8px;
-    }
-
-    .card-desc {
-        font-size: 0.92rem;
-        color: #475569;
-        line-height: 1.5;
+    .hero-subtitle {
+        font-size: 1.05rem;
+        color: #64748b;
+        margin-bottom: 24px;
+        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -103,67 +100,174 @@ with col_nav2:
 
 st.markdown("---")
 
-# Helper function to create interactive card
-def render_card(title, description, target_page):
+# Helper component function to render vibrant, interactive HTML cards
+def render_feature_card(title, tag, description, badge_color, target_page):
     card_html = f"""
-    <div class="feature-card" onclick="window.parent.postMessage({{type: 'streamlit:setComponentValue', value: '{target_page}'}}, '*')">
-        <div class="card-title">{title}</div>
-        <div class="card-desc">{description}</div>
-    </div>
-    <script>
-        document.querySelector('.feature-card').addEventListener('click', function() {{
-            window.parent.location.href = window.parent.location.pathname + '?page={target_page}';
-        }});
-    </script>
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{ font-family: 'Plus Jakarta Sans', sans-serif; background: transparent; padding: 6px; }}
+        
+        .card {{
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 22px;
+            height: 165px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }}
+
+        .card::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: {badge_color};
+            opacity: 0.85;
+            transition: all 0.3s ease;
+        }}
+
+        .card:hover {{
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.12);
+            border-color: #cbd5e1;
+        }}
+
+        .card:hover::before {{
+            height: 6px;
+            opacity: 1;
+        }}
+
+        .header-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }}
+
+        .title {{
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .badge {{
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: {badge_color}15;
+            color: {badge_color};
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+
+        .desc {{
+            font-size: 0.88rem;
+            color: #64748b;
+            line-height: 1.5;
+            font-weight: 500;
+        }}
+
+        .footer-link {{
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: {badge_color};
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 10px;
+        }}
+    </style>
+    </head>
+    <body>
+        <div class="card" onclick="openPage()">
+            <div>
+                <div class="header-row">
+                    <div class="title">{title}</div>
+                    <span class="badge">{tag}</span>
+                </div>
+                <div class="desc">{description}</div>
+            </div>
+            <div class="footer-link">Explore Tool &rarr;</div>
+        </div>
+
+        <script>
+            function openPage() {{
+                window.parent.location.href = window.parent.location.pathname + '?page={target_page}';
+            }}
+        </script>
+    </body>
+    </html>
     """
-    components.html(card_html, height=170)
+    components.html(card_html, height=180)
 
 # --- PAGE 1: WELCOME PAGE ---
 if st.session_state.active_page == "Home":
-    st.title("🚀 UPSC AI Quest Hub")
-    st.subheader("Select a tool below to start practicing:")
-    st.write("")
+    st.markdown('<div class="hero-title">🚀 UPSC AI Quest Hub</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-subtitle">Select an AI preparation tool below to begin practice:</div>', unsafe_allow_html=True)
 
     # Row 1
     col1, col2 = st.columns(2)
     with col1:
-        render_card(
-            "🎯 1. Prelims PYQ Quiz", 
-            "Custom test maker using official past questions (2006–2025). Filter by subject, topic, and year range with instant automated scoring.",
+        render_feature_card(
+            "🎯 Prelims PYQ Quiz",
+            "Prelims",
+            "Custom test builder from official 2006–2025 PYQs. Filter by subject, topic, and year with automatic instant scoring.",
+            "#10b981",  # Emerald Green
             "Prelims PYQ Quiz"
         )
     with col2:
-        render_card(
-            "✍️ 2. Mains PYQ Answer Writing", 
-            "Select official Mains questions, write your answer on paper, and upload a photo. The AI scans your handwriting and evaluates your answer like a real UPSC examiner.",
+        render_feature_card(
+            "✍️ Mains PYQ Writing",
+            "Mains OCR",
+            "Select Mains questions, write on paper, and upload a photo. AI scans handwriting and evaluates against UPSC standards.",
+            "#2563eb",  # Royal Blue
             "Mains PYQ Practice"
         )
 
-    st.write("")
-    
     # Row 2
     col3, col4 = st.columns(2)
     with col3:
-        render_card(
-            "📊 3. CSAT PYQ Practice", 
-            "Master Math, Logical Reasoning, and Reading Comprehension with dedicated past-year practice sets.",
+        render_feature_card(
+            "📊 CSAT Practice",
+            "CSAT",
+            "Master Quant, Logical Reasoning, and Reading Comprehension with interactive practice sets.",
+            "#8b5cf6",  # Purple
             "CSAT PYQ Quiz"
         )
     with col4:
-        render_card(
-            "⚡ 4. Dynamic Current Affairs & Static Quiz", 
-            "Generate unlimited practice questions instantly based on recent news and the static UPSC syllabus.",
+        render_feature_card(
+            "⚡ Dynamic Quiz Generator",
+            "AI Generated",
+            "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
+            "#f59e0b",  # Amber/Orange
             "Daily Quiz Generator"
         )
-
-    st.write("")
 
     # Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        render_card(
-            "🔍 5. Universal Mains Evaluator", 
-            "Upload an answer sheet for ANY question—whether generated by our AI or typed/handwritten by you—and receive detailed feedback.",
+        render_feature_card(
+            "🔍 Universal Mains Evaluator",
+            "Any Question",
+            "Upload an answer sheet for ANY question—whether provided by AI or typed by you—and get instant feedback.",
+            "#6366f1",  # Indigo
             "Universal Mains Evaluator"
         )
 
