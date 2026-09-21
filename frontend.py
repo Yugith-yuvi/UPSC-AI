@@ -8,7 +8,7 @@ BACKEND_URL = os.getenv("BACKEND_URL", "https://upsc-ai-backend.onrender.com").r
 st.set_page_config(
     page_title="UPSC AI Quest Hub", 
     layout="wide",
-    initial_sidebar_state="collapsed"  # Keeps sidebar hidden inside the top-left hamburger menu icon
+    initial_sidebar_state="collapsed"
 )
 
 # Initialize active page state
@@ -18,32 +18,76 @@ if "active_page" not in st.session_state:
 def navigate_to(page_name):
     st.session_state.active_page = page_name
 
-# --- TOP NAVIGATION BAR (Menu Icon + Home Icon) ---
-col_nav1, col_nav2, col_nav3 = st.columns([1, 1, 10])
+# --- CUSTOM CSS: TURN BUTTONS INTO HOVER-POP CARDS & STYLE MENU ---
+st.markdown("""
+<style>
+    /* Turn Streamlit primary buttons into full card containers with hover-pop effect */
+    div.stButton > button {
+        width: 100% !important;
+        height: 180px !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 12px !important;
+        background-color: #ffffff !important;
+        color: #1e1e1e !important;
+        text-align: left !important;
+        padding: 20px !important;
+        white-space: normal !important;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03) !important;
+        transition: all 0.25s ease-in-out !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+    }
+
+    /* Hover "Pop Up" effect when mouse moves over the card */
+    div.stButton > button:hover {
+        transform: translateY(-6px) !important;
+        box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.12) !important;
+        border-color: #ff4b4b !important;
+        background-color: #ffffff !important;
+        color: #1e1e1e !important;
+    }
+
+    /* Fix menu icon styling inside popover */
+    div[data-testid="stPopover"] div.stButton > button {
+        height: 45px !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --- TOP NAVIGATION BAR (Home Button + Menu Icon without Home Overview inside) ---
+col_nav1, col_nav2, _ = st.columns([1, 1, 10])
 
 with col_nav1:
-    if st.button("🏠 Home", use_container_width=True):
+    if st.button("🏠 Home", key="nav_home_top", use_container_width=True):
         navigate_to("Home")
+        st.rerun()
 
 with col_nav2:
     with st.popover("☰ Menu"):
-        st.write("**Navigation**")
-        if st.button("🏠 Home Overview", use_container_width=True):
-            navigate_to("Home")
-        if st.button("🎯 Prelims PYQ Quiz", use_container_width=True):
+        st.write("**Quick Tools Navigation**")
+        if st.button("🎯 Prelims PYQ Quiz", key="m_p1", use_container_width=True):
             navigate_to("Prelims PYQ Quiz")
-        if st.button("✍️ Mains PYQ Practice", use_container_width=True):
+            st.rerun()
+        if st.button("✍️ Mains PYQ Practice", key="m_p2", use_container_width=True):
             navigate_to("Mains PYQ Practice")
-        if st.button("📊 CSAT PYQ Quiz", use_container_width=True):
+            st.rerun()
+        if st.button("📊 CSAT PYQ Quiz", key="m_p3", use_container_width=True):
             navigate_to("CSAT PYQ Quiz")
-        if st.button("⚡ Daily Quiz Generator", use_container_width=True):
+            st.rerun()
+        if st.button("⚡ Daily Quiz Generator", key="m_p4", use_container_width=True):
             navigate_to("Daily Quiz Generator")
-        if st.button("🔍 Universal Mains Evaluator", use_container_width=True):
+            st.rerun()
+        if st.button("🔍 Universal Mains Evaluator", key="m_p5", use_container_width=True):
             navigate_to("Universal Mains Evaluator")
+            st.rerun()
 
 st.markdown("---")
 
-# --- PAGE 1: WELCOME PAGE WITH CLICKABLE FEATURE BUTTONS ---
+# --- PAGE 1: WELCOME PAGE WITH HOVER-POP CARDS ---
 if st.session_state.active_page == "Home":
     st.title("🚀 UPSC AI Quest Hub")
     st.subheader("Select a tool below to start practicing:")
@@ -53,20 +97,16 @@ if st.session_state.active_page == "Home":
     col1, col2 = st.columns(2)
     
     with col1:
-        with st.container(border=True):
-            st.subheader("🎯 1. Prelims PYQ Quiz")
-            st.write("Custom test maker using official past questions (2006–2025). Filter by subject, topic, and year range with instant automated scoring.")
-            if st.button("Launch Prelims Quiz ➔", key="btn_p1", use_container_width=True, type="primary"):
-                navigate_to("Prelims PYQ Quiz")
-                st.rerun()
+        card_1_text = "🎯 1. Prelims PYQ Quiz\n\nCustom test maker using official past questions (2006–2025). Filter by subject, topic, and year range with instant automated scoring."
+        if st.button(card_1_text, key="card_1"):
+            navigate_to("Prelims PYQ Quiz")
+            st.rerun()
 
     with col2:
-        with st.container(border=True):
-            st.subheader("✍️ 2. Mains PYQ Answer Writing")
-            st.write("Select official Mains questions, write your answer on paper, and upload a photo. The AI scans your handwriting and evaluates your answer like a real UPSC examiner.")
-            if st.button("Launch Mains PYQ ➔", key="btn_p2", use_container_width=True, type="primary"):
-                navigate_to("Mains PYQ Practice")
-                st.rerun()
+        card_2_text = "✍️ 2. Mains PYQ Answer Writing\n\nSelect official Mains questions, write your answer on paper, and upload a photo. The AI scans your handwriting and evaluates your answer like a real UPSC examiner."
+        if st.button(card_2_text, key="card_2"):
+            navigate_to("Mains PYQ Practice")
+            st.rerun()
 
     st.write("")
     
@@ -74,32 +114,26 @@ if st.session_state.active_page == "Home":
     col3, col4 = st.columns(2)
 
     with col3:
-        with st.container(border=True):
-            st.subheader("📊 3. CSAT PYQ Practice")
-            st.write("Master Math, Logical Reasoning, and Reading Comprehension with dedicated past-year practice sets.")
-            if st.button("Launch CSAT Quiz ➔", key="btn_p3", use_container_width=True, type="primary"):
-                navigate_to("CSAT PYQ Quiz")
-                st.rerun()
+        card_3_text = "📊 3. CSAT PYQ Practice\n\nMaster Math, Logical Reasoning, and Reading Comprehension with dedicated past-year practice sets."
+        if st.button(card_3_text, key="card_3"):
+            navigate_to("CSAT PYQ Quiz")
+            st.rerun()
 
     with col4:
-        with st.container(border=True):
-            st.subheader("⚡ 4. Dynamic Current Affairs & Static Quiz")
-            st.write("Generate unlimited practice questions instantly based on recent news and the static UPSC syllabus.")
-            if st.button("Launch Dynamic Quiz ➔", key="btn_p4", use_container_width=True, type="primary"):
-                navigate_to("Daily Quiz Generator")
-                st.rerun()
+        card_4_text = "⚡ 4. Dynamic Current Affairs & Static Quiz\n\nGenerate unlimited practice questions instantly based on recent news and the static UPSC syllabus."
+        if st.button(card_4_text, key="card_4"):
+            navigate_to("Daily Quiz Generator")
+            st.rerun()
 
     st.write("")
 
     # Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        with st.container(border=True):
-            st.subheader("🔍 5. Universal Mains Evaluator")
-            st.write("Upload an answer sheet for ANY question—whether generated by our AI or typed/handwritten by you—and receive detailed feedback.")
-            if st.button("Launch Universal Evaluator ➔", key="btn_p5", use_container_width=True, type="primary"):
-                navigate_to("Universal Mains Evaluator")
-                st.rerun()
+        card_5_text = "🔍 5. Universal Mains Evaluator\n\nUpload an answer sheet for ANY question—whether generated by our AI or typed/handwritten by you—and receive detailed feedback."
+        if st.button(card_5_text, key="card_5"):
+            navigate_to("Universal Mains Evaluator")
+            st.rerun()
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
@@ -112,7 +146,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     with col2:
         years = st.slider("Select Year Range", 2006, 2025, (2015, 2025))
 
-    if st.button("Generate Quiz Test", type="primary"):
+    if st.button("Generate Quiz Test", key="run_prelims"):
         with st.spinner("Fetching questions from database..."):
             try:
                 endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
@@ -144,11 +178,11 @@ elif st.session_state.active_page == "Mains PYQ Practice":
 
     subject = st.selectbox("Select Mains Subject", ["GS 1 - History & Society", "GS 2 - Polity & IR", "GS 3 - Economy & Environment", "GS 4 - Ethics"])
     
-    if st.button("Get Mains Question"):
+    if st.button("Get Mains Question", key="get_mains_q"):
         st.info("📌 **Sample Question:** Evaluate the impact of climate change on coastal agriculture in India, suggesting mitigation strategies. (15 Marks, 250 Words)")
 
     uploaded_file = st.file_uploader("Upload Scanned Answer Sheet (JPG / PNG / PDF)", type=["jpg", "jpeg", "png", "pdf"])
-    if uploaded_file and st.button("Evaluate Answer with AI"):
+    if uploaded_file and st.button("Evaluate Answer with AI", key="eval_mains_btn"):
         with st.spinner("AI is reading handwriting (OCR) and evaluating content against UPSC criteria..."):
             st.success("Evaluation Complete!")
             st.markdown("### 📝 Score: **8.5 / 15**")
@@ -161,7 +195,7 @@ elif st.session_state.active_page == "CSAT PYQ Quiz":
     st.write("Practice Quant, Logical Reasoning, and Reading Comprehension questions.")
 
     topic = st.selectbox("Select Topic", ["Reading Comprehension", "Data Interpretation", "Logical Reasoning", "Quantitative Aptitude"])
-    if st.button("Start CSAT Practice Set"):
+    if st.button("Start CSAT Practice Set", key="start_csat"):
         st.info("Loading CSAT question set...")
 
 # --- PAGE 5: DYNAMIC PRELIMS QUIZ ---
@@ -170,7 +204,7 @@ elif st.session_state.active_page == "Daily Quiz Generator":
     st.write("Fresh questions generated on the spot using the latest UPSC statement-based pattern.")
 
     cat = st.radio("Quiz Category", ["Current Affairs (Last 12 Months)", "Static Syllabus Mix"])
-    if st.button("Generate Fresh Questions"):
+    if st.button("Generate Fresh Questions", key="gen_daily_q"):
         with st.spinner("AI is creating new questions..."):
             st.write("### Sample AI Generated Question")
             st.write("Consider the following statements regarding Central Bank Digital Currency (CBDC):")
@@ -191,7 +225,7 @@ elif st.session_state.active_page == "Universal Mains Evaluator":
     
     answer_sheet = st.file_uploader("Upload Scanned Answer Sheet", type=["jpg", "jpeg", "png", "pdf"], key="univ_eval")
     
-    if answer_sheet and st.button("Run Comprehensive AI Evaluation"):
+    if answer_sheet and st.button("Run Comprehensive AI Evaluation", key="run_univ_eval"):
         with st.spinner("Analyzing answer structure, facts, and clarity..."):
             st.success("Evaluation Finished!")
             st.markdown("### 📊 Evaluation Summary")
