@@ -37,7 +37,7 @@ subtext_color = "#94a3b8" if is_dark else "#64748b"
 
 nav_btn_bg = "#1e293b" if is_dark else "#ffffff"
 nav_btn_border = "#334155" if is_dark else "#cbd5e1"
-nav_btn_text = "#ffffff" if is_dark else "#0f172a"
+nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
 
 stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
@@ -53,34 +53,37 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* 1. FIX BLANK WHITE HOME & MENU BUTTONS */
-    div[data-testid="stBaseButton-secondary"],
-    div[data-testid="stPopover"] > button {{
+    /* 1. AGGRESSIVE OVERRIDE FOR HOME BUTTON AND MENU POPOVER */
+    div[data-testid="stColumn"] button,
+    div[data-testid="stPopover"] > button,
+    div[data-testid="stBaseButton-secondary"] {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         border-radius: 10px !important;
         height: 42px !important;
         box-shadow: none !important;
         transition: all 0.2s ease !important;
+        color: {nav_btn_text} !important;
     }}
 
-    /* Force text and icons inside buttons to be visible */
-    div[data-testid="stBaseButton-secondary"] p,
-    div[data-testid="stPopover"] > button p,
-    div[data-testid="stBaseButton-secondary"] span,
-    div[data-testid="stPopover"] > button span {{
+    /* Force text, labels, and SVG icons inside buttons to render properly */
+    div[data-testid="stColumn"] button *,
+    div[data-testid="stPopover"] > button *,
+    div[data-testid="stBaseButton-secondary"] * {{
         color: {nav_btn_text} !important;
+        fill: {nav_btn_text} !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
     }}
 
-    div[data-testid="stBaseButton-secondary"]:hover,
-    div[data-testid="stPopover"] > button:hover {{
+    div[data-testid="stColumn"] button:hover,
+    div[data-testid="stPopover"] > button:hover,
+    div[data-testid="stBaseButton-secondary"]:hover {{
         border-color: #38bdf8 !important;
         background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* 2. SLEEK TOGGLE SWITCH CONTAINER STYLING */
+    /* 2. TOGGLE SWITCH CONTAINER STYLING */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
