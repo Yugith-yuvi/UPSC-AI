@@ -53,7 +53,7 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* 1. AGGRESSIVE OVERRIDE FOR HOME BUTTON AND MENU POPOVER */
+    /* 1. TOP NAV TRIGGER BUTTONS */
     div[data-testid="stColumn"] button,
     div[data-testid="stPopover"] > button,
     div[data-testid="stBaseButton-secondary"] {{
@@ -66,7 +66,6 @@ st.markdown(f"""
         color: {nav_btn_text} !important;
     }}
 
-    /* Force text, labels, and SVG icons inside buttons to render properly */
     div[data-testid="stColumn"] button *,
     div[data-testid="stPopover"] > button *,
     div[data-testid="stBaseButton-secondary"] * {{
@@ -83,7 +82,41 @@ st.markdown(f"""
         background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* 2. TOGGLE SWITCH CONTAINER STYLING */
+    /* 2. FIX POPOVER MENU CONTAINER & POPUP CONTENTS */
+    div[data-testid="stPopoverBody"] {{
+        background-color: {'#0f172a' if is_dark else '#ffffff'} !important;
+        border: 1px solid {nav_btn_border} !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        padding: 12px !important;
+    }}
+
+    /* Style text inside the open popover container */
+    div[data-testid="stPopoverBody"] p, 
+    div[data-testid="stPopoverBody"] span,
+    div[data-testid="stPopoverBody"] strong {{
+        color: {text_color} !important;
+    }}
+
+    /* Style buttons inside the popover list */
+    div[data-testid="stPopoverBody"] button {{
+        background-color: {nav_btn_bg} !important;
+        border: 1px solid {nav_btn_border} !important;
+        border-radius: 8px !important;
+        margin-bottom: 6px !important;
+    }}
+
+    div[data-testid="stPopoverBody"] button p {{
+        color: {nav_btn_text} !important;
+        font-weight: 600 !important;
+    }}
+
+    div[data-testid="stPopoverBody"] button:hover {{
+        border-color: #38bdf8 !important;
+        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
+    }}
+
+    /* 3. TOGGLE SWITCH CONTAINER STYLING */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
@@ -168,7 +201,6 @@ with col_nav2:
             st.rerun()
 
 with col_toggle:
-    # NATIVE STREAMLIT TOGGLE SWITCH
     theme_toggle = st.toggle("Dark Mode 🌙" if is_dark else "Light Mode ☀️", value=is_dark, key="theme_toggle")
     new_theme = "Dark" if theme_toggle else "Light"
     
