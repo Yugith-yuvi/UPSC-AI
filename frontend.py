@@ -8,6 +8,7 @@ BACKEND_URL = os.getenv("BACKEND_URL", "https://upsc-ai-backend.onrender.com").r
 
 st.set_page_config(
     page_title="UPSC AI Quest Hub", 
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -16,7 +17,7 @@ st.set_page_config(
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
-# Handle query parameters for seamless page navigation
+# Handle query parameters for page navigation
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.active_page = query_params["page"]
@@ -25,48 +26,72 @@ def navigate_to(page_name):
     st.session_state.active_page = page_name
     st.query_params["page"] = page_name
 
-# --- MODERN INJECTED CSS FOR PREMIUM SAAS LOOK ---
+# --- MODERN INJECTED CSS FOR DARK DASHBOARD & GLASSMORPHISM ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        background-color: #f8fafc !important;
+    /* Dark Mode Core Theme */
+    html, body, [class*="stApp"] {
+        font-family: 'Outfit', sans-serif !important;
+        background-color: #0b0f19 !important;
+        color: #f1f5f9 !important;
     }
 
-    /* Header & Navigation Bar Styling */
+    /* Clean Header Navigation Button Styling */
     div[data-testid="column"]:nth-child(1) button {
-        height: 44px !important;
-        border-radius: 10px !important;
-        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%) !important;
-        border: 1px solid #cbd5e1 !important;
-        color: #0f172a !important;
+        height: 42px !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        color: #38bdf8 !important;
         font-weight: 700 !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+        backdrop-filter: blur(8px) !important;
         transition: all 0.2s ease !important;
     }
     div[data-testid="column"]:nth-child(1) button:hover {
-        border-color: #6366f1 !important;
-        color: #6366f1 !important;
-        transform: translateY(-1px) !important;
+        background: rgba(56, 189, 248, 0.15) !important;
+        border-color: #38bdf8 !important;
+        color: #ffffff !important;
+        transform: translateY(-2px) !important;
     }
 
-    /* Main Page Titles */
-    .hero-title {
-        font-size: 2.2rem;
+    /* Hero Text Styling */
+    .hero-glow-title {
+        font-size: 2.5rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     
-    .hero-subtitle {
-        font-size: 1.05rem;
-        color: #64748b;
+    .hero-sub {
+        font-size: 1.1rem;
+        color: #94a3b8;
         margin-bottom: 24px;
         font-weight: 500;
+    }
+
+    /* Stats Banner Styling */
+    .stat-box {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px 20px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+    .stat-number {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #38bdf8;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -100,31 +125,32 @@ with col_nav2:
 
 st.markdown("---")
 
-# Helper component function to render vibrant, interactive HTML cards
-def render_feature_card(title, tag, description, badge_color, target_page):
+# Helper function to render neon glassmorphic cards
+def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page):
     card_html = f"""
     <!DOCTYPE html>
     <html>
     <head>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        body {{ font-family: 'Plus Jakarta Sans', sans-serif; background: transparent; padding: 6px; }}
+        body {{ font-family: 'Outfit', sans-serif; background: transparent; padding: 6px; }}
         
         .card {{
-            background: #ffffff;
-            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
             padding: 22px;
-            height: 165px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            height: 175px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            backdrop-filter: blur(12px);
         }}
 
         .card::before {{
@@ -133,65 +159,78 @@ def render_feature_card(title, tag, description, badge_color, target_page):
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: {badge_color};
-            opacity: 0.85;
+            height: 3px;
+            background: {accent_gradient};
             transition: all 0.3s ease;
         }}
 
         .card:hover {{
-            transform: translateY(-6px);
-            box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.12);
-            border-color: #cbd5e1;
+            transform: translateY(-8px) scale(1.01);
+            border-color: {glow_color}88;
+            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22;
         }}
 
         .card:hover::before {{
-            height: 6px;
-            opacity: 1;
+            height: 5px;
         }}
 
         .header-row {{
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }}
 
         .title {{
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: #0f172a;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #f8fafc;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }}
 
         .badge {{
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 700;
             padding: 4px 10px;
             border-radius: 20px;
-            background: {badge_color}15;
-            color: {badge_color};
+            background: {glow_color}22;
+            color: {glow_color};
+            border: 1px solid {glow_color}44;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }}
 
         .desc {{
             font-size: 0.88rem;
-            color: #64748b;
+            color: #94a3b8;
             line-height: 1.5;
-            font-weight: 500;
+            font-weight: 400;
         }}
 
-        .footer-link {{
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: {badge_color};
+        .action-row {{
             display: flex;
+            justify-content: flex-end;
             align-items: center;
-            gap: 4px;
-            margin-top: 10px;
+        }}
+
+        .launch-btn {{
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: {accent_gradient};
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px {glow_color}44;
+            transition: all 0.2s ease;
+        }}
+
+        .card:hover .launch-btn {{
+            transform: translateX(3px);
         }}
     </style>
     </head>
@@ -199,12 +238,14 @@ def render_feature_card(title, tag, description, badge_color, target_page):
         <div class="card" onclick="openPage()">
             <div>
                 <div class="header-row">
-                    <div class="title">{title}</div>
+                    <div class="title"><span>{icon}</span> {title}</div>
                     <span class="badge">{tag}</span>
                 </div>
                 <div class="desc">{description}</div>
             </div>
-            <div class="footer-link">Explore Tool &rarr;</div>
+            <div class="action-row">
+                <div class="launch-btn">Launch Tool &rarr;</div>
+            </div>
         </div>
 
         <script>
@@ -215,59 +256,83 @@ def render_feature_card(title, tag, description, badge_color, target_page):
     </body>
     </html>
     """
-    components.html(card_html, height=180)
+    components.html(card_html, height=190)
 
-# --- PAGE 1: WELCOME PAGE ---
+# --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
-    st.markdown('<div class="hero-title">🚀 UPSC AI Quest Hub</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-subtitle">Select an AI preparation tool below to begin practice:</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Next-generation AI engine for Prelims, Mains, and CSAT practice.</div>', unsafe_allow_html=True)
 
-    # Row 1
+    # Dynamic Stat Bar
+    s1, s2, s3, s4 = st.columns(4)
+    with s1:
+        st.markdown('<div class="stat-box"><div class="stat-number">2006–2025</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
+    with s2:
+        st.markdown('<div class="stat-box"><div class="stat-number">AI OCR 2.0</div><div class="stat-label">Handwriting Scan</div></div>', unsafe_allow_html=True)
+    with s3:
+        st.markdown('<div class="stat-box"><div class="stat-number">Real-Time</div><div class="stat-label">Current Affairs</div></div>', unsafe_allow_html=True)
+    with s4:
+        st.markdown('<div class="stat-box"><div class="stat-number">Instant</div><div class="stat-label">Mains Evaluation</div></div>', unsafe_allow_html=True)
+
+    st.write("")
+    st.write("")
+
+    # Grid Row 1
     col1, col2 = st.columns(2)
     with col1:
-        render_feature_card(
-            "🎯 Prelims PYQ Quiz",
-            "Prelims",
-            "Custom test builder from official 2006–2025 PYQs. Filter by subject, topic, and year with automatic instant scoring.",
-            "#10b981",  # Emerald Green
+        render_neon_card(
+            "🎯",
+            "Prelims PYQ Quiz",
+            "Prelims 2006–2025",
+            "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
+            "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            "#10b981",
             "Prelims PYQ Quiz"
         )
     with col2:
-        render_feature_card(
-            "✍️ Mains PYQ Writing",
-            "Mains OCR",
-            "Select Mains questions, write on paper, and upload a photo. AI scans handwriting and evaluates against UPSC standards.",
-            "#2563eb",  # Royal Blue
+        render_neon_card(
+            "✍️",
+            "Mains PYQ Writing",
+            "Handwriting OCR",
+            "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
+            "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            "#3b82f6",
             "Mains PYQ Practice"
         )
 
-    # Row 2
+    # Grid Row 2
     col3, col4 = st.columns(2)
     with col3:
-        render_feature_card(
-            "📊 CSAT Practice",
-            "CSAT",
-            "Master Quant, Logical Reasoning, and Reading Comprehension with interactive practice sets.",
-            "#8b5cf6",  # Purple
+        render_neon_card(
+            "📊",
+            "CSAT Interactive Arena",
+            "Quant & Reasoning",
+            "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
+            "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
+            "#a855f7",
             "CSAT PYQ Quiz"
         )
     with col4:
-        render_feature_card(
-            "⚡ Dynamic Quiz Generator",
-            "AI Generated",
+        render_neon_card(
+            "⚡",
+            "Dynamic Quiz Generator",
+            "Current Affairs",
             "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
-            "#f59e0b",  # Amber/Orange
+            "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+            "#f59e0b",
             "Daily Quiz Generator"
         )
 
-    # Row 3
+    # Grid Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        render_feature_card(
-            "🔍 Universal Mains Evaluator",
+        render_neon_card(
+            "🔍",
+            "Universal Mains Evaluator",
             "Any Question",
-            "Upload an answer sheet for ANY question—whether provided by AI or typed by you—and get instant feedback.",
-            "#6366f1",  # Indigo
+            "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.",
+            "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+            "#f43f5e",
             "Universal Mains Evaluator"
         )
 
