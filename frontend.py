@@ -357,7 +357,7 @@ if st.session_state.active_page == "Home":
     # Dynamic Stat Bar
     s1, s2, s3, s4 = st.columns(4)
     with s1:
-        st.markdown('<div class="stat-box"><div class="stat-number">2006–2025</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-box"><div class="stat-number">2000–2026</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
     with s2:
         st.markdown('<div class="stat-box"><div class="stat-number">AI OCR 2.0</div><div class="stat-label">Handwriting Scan</div></div>', unsafe_allow_html=True)
     with s3:
@@ -374,7 +374,7 @@ if st.session_state.active_page == "Home":
         render_neon_card(
             "🎯",
             "Prelims PYQ Quiz",
-            "Prelims 2006–2025",
+            "Prelims 2000–2026",
             "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
             "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             "#10b981",
@@ -436,7 +436,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     with col1:
         subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
     with col2:
-        years = st.slider("Select Year Range", 2006, 2025, (2015, 2025))
+        years = st.slider("Select Year Range", 2000, 2026, (2015, 2025))
 
     if st.button("Generate Quiz Test", key="run_prelims", type="primary"):
         with st.spinner("Fetching questions from database..."):
