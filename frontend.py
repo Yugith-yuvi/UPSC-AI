@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 import os
 
@@ -15,54 +16,69 @@ st.set_page_config(
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
+# Handle query parameters for page navigation
+query_params = st.query_params
+if "page" in query_params:
+    st.session_state.active_page = query_params["page"]
+
 def navigate_to(page_name):
     st.session_state.active_page = page_name
+    st.query_params["page"] = page_name
 
-# --- CUSTOM CSS: TURN BUTTONS INTO HOVER-POP CARDS & STYLE MENU ---
+# --- INJECT CLEAN CUSTOM CSS & HOVER EFFECTS ---
 st.markdown("""
 <style>
-    /* Turn Streamlit primary buttons into full card containers with hover-pop effect */
-    div.stButton > button {
-        width: 100% !important;
-        height: 180px !important;
-        border: 1px solid #e0e0e0 !important;
-        border-radius: 12px !important;
-        background-color: #ffffff !important;
+    /* Fix top navigation buttons */
+    div[data-testid="column"]:nth-child(1) button {
+        height: 42px !important;
+        border-radius: 8px !important;
+        background-color: #f0f2f6 !important;
+        border: 1px solid #d0d4dc !important;
         color: #1e1e1e !important;
-        text-align: left !important;
-        padding: 20px !important;
-        white-space: normal !important;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03) !important;
-        transition: all 0.25s ease-in-out !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Interactive Card Styles */
+    .feature-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px;
+        height: 160px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease-in-out;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
     }
 
-    /* Hover "Pop Up" effect when mouse moves over the card */
-    div.stButton > button:hover {
-        transform: translateY(-6px) !important;
-        box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.12) !important;
-        border-color: #ff4b4b !important;
-        background-color: #ffffff !important;
-        color: #1e1e1e !important;
+    .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.12);
+        border-color: #ff4b4b;
     }
 
-    /* Fix menu icon styling inside popover */
-    div[data-testid="stPopover"] div.stButton > button {
-        height: 45px !important;
-        border-radius: 6px !important;
-        box-shadow: none !important;
-        transform: none !important;
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .card-desc {
+        font-size: 0.92rem;
+        color: #475569;
+        line-height: 1.5;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- TOP NAVIGATION BAR (Home Button + Menu Icon without Home Overview inside) ---
-col_nav1, col_nav2, _ = st.columns([1, 1, 10])
+# --- TOP NAVIGATION BAR ---
+col_nav1, col_nav2, _ = st.columns([1.2, 1.2, 9.6])
 
 with col_nav1:
-    if st.button("🏠 Home", key="nav_home_top", use_container_width=True):
+    if st.button("🏠 Home", key="btn_top_home", use_container_width=True):
         navigate_to("Home")
         st.rerun()
 
@@ -87,7 +103,22 @@ with col_nav2:
 
 st.markdown("---")
 
-# --- PAGE 1: WELCOME PAGE WITH HOVER-POP CARDS ---
+# Helper function to create interactive card
+def render_card(title, description, target_page):
+    card_html = f"""
+    <div class="feature-card" onclick="window.parent.postMessage({{type: 'streamlit:setComponentValue', value: '{target_page}'}}, '*')">
+        <div class="card-title">{title}</div>
+        <div class="card-desc">{description}</div>
+    </div>
+    <script>
+        document.querySelector('.feature-card').addEventListener('click', function() {{
+            window.parent.location.href = window.parent.location.pathname + '?page={target_page}';
+        }});
+    </script>
+    """
+    components.html(card_html, height=170)
+
+# --- PAGE 1: WELCOME PAGE ---
 if st.session_state.active_page == "Home":
     st.title("🚀 UPSC AI Quest Hub")
     st.subheader("Select a tool below to start practicing:")
@@ -95,45 +126,46 @@ if st.session_state.active_page == "Home":
 
     # Row 1
     col1, col2 = st.columns(2)
-    
     with col1:
-        card_1_text = "🎯 1. Prelims PYQ Quiz\n\nCustom test maker using official past questions (2006–2025). Filter by subject, topic, and year range with instant automated scoring."
-        if st.button(card_1_text, key="card_1"):
-            navigate_to("Prelims PYQ Quiz")
-            st.rerun()
-
+        render_card(
+            "🎯 1. Prelims PYQ Quiz", 
+            "Custom test maker using official past questions (2006–2025). Filter by subject, topic, and year range with instant automated scoring.",
+            "Prelims PYQ Quiz"
+        )
     with col2:
-        card_2_text = "✍️ 2. Mains PYQ Answer Writing\n\nSelect official Mains questions, write your answer on paper, and upload a photo. The AI scans your handwriting and evaluates your answer like a real UPSC examiner."
-        if st.button(card_2_text, key="card_2"):
-            navigate_to("Mains PYQ Practice")
-            st.rerun()
+        render_card(
+            "✍️ 2. Mains PYQ Answer Writing", 
+            "Select official Mains questions, write your answer on paper, and upload a photo. The AI scans your handwriting and evaluates your answer like a real UPSC examiner.",
+            "Mains PYQ Practice"
+        )
 
     st.write("")
     
     # Row 2
     col3, col4 = st.columns(2)
-
     with col3:
-        card_3_text = "📊 3. CSAT PYQ Practice\n\nMaster Math, Logical Reasoning, and Reading Comprehension with dedicated past-year practice sets."
-        if st.button(card_3_text, key="card_3"):
-            navigate_to("CSAT PYQ Quiz")
-            st.rerun()
-
+        render_card(
+            "📊 3. CSAT PYQ Practice", 
+            "Master Math, Logical Reasoning, and Reading Comprehension with dedicated past-year practice sets.",
+            "CSAT PYQ Quiz"
+        )
     with col4:
-        card_4_text = "⚡ 4. Dynamic Current Affairs & Static Quiz\n\nGenerate unlimited practice questions instantly based on recent news and the static UPSC syllabus."
-        if st.button(card_4_text, key="card_4"):
-            navigate_to("Daily Quiz Generator")
-            st.rerun()
+        render_card(
+            "⚡ 4. Dynamic Current Affairs & Static Quiz", 
+            "Generate unlimited practice questions instantly based on recent news and the static UPSC syllabus.",
+            "Daily Quiz Generator"
+        )
 
     st.write("")
 
     # Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        card_5_text = "🔍 5. Universal Mains Evaluator\n\nUpload an answer sheet for ANY question—whether generated by our AI or typed/handwritten by you—and receive detailed feedback."
-        if st.button(card_5_text, key="card_5"):
-            navigate_to("Universal Mains Evaluator")
-            st.rerun()
+        render_card(
+            "🔍 5. Universal Mains Evaluator", 
+            "Upload an answer sheet for ANY question—whether generated by our AI or typed/handwritten by you—and receive detailed feedback.",
+            "Universal Mains Evaluator"
+        )
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
@@ -146,7 +178,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     with col2:
         years = st.slider("Select Year Range", 2006, 2025, (2015, 2025))
 
-    if st.button("Generate Quiz Test", key="run_prelims"):
+    if st.button("Generate Quiz Test", key="run_prelims", type="primary"):
         with st.spinner("Fetching questions from database..."):
             try:
                 endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
@@ -182,7 +214,7 @@ elif st.session_state.active_page == "Mains PYQ Practice":
         st.info("📌 **Sample Question:** Evaluate the impact of climate change on coastal agriculture in India, suggesting mitigation strategies. (15 Marks, 250 Words)")
 
     uploaded_file = st.file_uploader("Upload Scanned Answer Sheet (JPG / PNG / PDF)", type=["jpg", "jpeg", "png", "pdf"])
-    if uploaded_file and st.button("Evaluate Answer with AI", key="eval_mains_btn"):
+    if uploaded_file and st.button("Evaluate Answer with AI", key="eval_mains_btn", type="primary"):
         with st.spinner("AI is reading handwriting (OCR) and evaluating content against UPSC criteria..."):
             st.success("Evaluation Complete!")
             st.markdown("### 📝 Score: **8.5 / 15**")
@@ -195,7 +227,7 @@ elif st.session_state.active_page == "CSAT PYQ Quiz":
     st.write("Practice Quant, Logical Reasoning, and Reading Comprehension questions.")
 
     topic = st.selectbox("Select Topic", ["Reading Comprehension", "Data Interpretation", "Logical Reasoning", "Quantitative Aptitude"])
-    if st.button("Start CSAT Practice Set", key="start_csat"):
+    if st.button("Start CSAT Practice Set", key="start_csat", type="primary"):
         st.info("Loading CSAT question set...")
 
 # --- PAGE 5: DYNAMIC PRELIMS QUIZ ---
@@ -204,7 +236,7 @@ elif st.session_state.active_page == "Daily Quiz Generator":
     st.write("Fresh questions generated on the spot using the latest UPSC statement-based pattern.")
 
     cat = st.radio("Quiz Category", ["Current Affairs (Last 12 Months)", "Static Syllabus Mix"])
-    if st.button("Generate Fresh Questions", key="gen_daily_q"):
+    if st.button("Generate Fresh Questions", key="gen_daily_q", type="primary"):
         with st.spinner("AI is creating new questions..."):
             st.write("### Sample AI Generated Question")
             st.write("Consider the following statements regarding Central Bank Digital Currency (CBDC):")
@@ -225,7 +257,7 @@ elif st.session_state.active_page == "Universal Mains Evaluator":
     
     answer_sheet = st.file_uploader("Upload Scanned Answer Sheet", type=["jpg", "jpeg", "png", "pdf"], key="univ_eval")
     
-    if answer_sheet and st.button("Run Comprehensive AI Evaluation", key="run_univ_eval"):
+    if answer_sheet and st.button("Run Comprehensive AI Evaluation", key="run_univ_eval", type="primary"):
         with st.spinner("Analyzing answer structure, facts, and clarity..."):
             st.success("Evaluation Finished!")
             st.markdown("### 📊 Evaluation Summary")
