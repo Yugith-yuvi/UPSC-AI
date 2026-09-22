@@ -19,12 +19,6 @@ if "active_page" not in st.session_state:
 if "theme" not in st.session_state:
     st.session_state.theme = "Dark"
 
-if "user_answers" not in st.session_state:
-    st.session_state.user_answers = {}
-
-if "quiz_submitted" not in st.session_state:
-    st.session_state.quiz_submitted = False
-
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.active_page = query_params["page"]
@@ -35,45 +29,47 @@ def navigate_to(page_name):
 
 is_dark = st.session_state.theme == "Dark"
 
-# SaaS Design Tokens matching screenshot
-bg_color = "#07090e" if is_dark else "#f8fafc"
-text_color = "#f8fafc" if is_dark else "#0f172a"
+# Dynamic Theme Color Tokens
+bg_color = "#0b0f19" if is_dark else "#f8fafc"
+text_color = "#f1f5f9" if is_dark else "#0f172a"
 subtext_color = "#94a3b8" if is_dark else "#64748b"
 
-nav_btn_bg = "rgba(15, 23, 42, 0.75)" if is_dark else "#ffffff"
-nav_btn_border = "rgba(255, 255, 255, 0.12)" if is_dark else "#cbd5e1"
+nav_btn_bg = "#1e293b" if is_dark else "#ffffff"
+nav_btn_border = "#334155" if is_dark else "#cbd5e1"
 nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
 
-stat_bg = "rgba(15, 23, 42, 0.6)" if is_dark else "#ffffff"
+stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
-card_bg = "rgba(15, 23, 42, 0.5)" if is_dark else "#ffffff"
+c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
+c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
+c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
 
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
+    /* Global Base Theme */
     html, body, [class*="stApp"] {{
-        font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+        font-family: 'Outfit', sans-serif !important;
         background-color: {bg_color} !important;
         color: {text_color} !important;
     }}
 
-    /* 1. TOP NAV & MENU BUTTONS */
-    div[data-testid="stColumn"] button,
+    /* 1. TOP NAV TRIGGER BUTTONS */
+    div[data-testid="stColumn"] > div > div > button:not([key^="card_btn_"]),
     div[data-testid="stPopover"] > button,
     div[data-testid="stBaseButton-secondary"] {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 12px !important;
-        height: 44px !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        backdrop-filter: blur(12px) !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        border-radius: 10px !important;
+        height: 42px !important;
+        box-shadow: none !important;
+        transition: all 0.2s ease !important;
         color: {nav_btn_text} !important;
     }}
 
-    div[data-testid="stColumn"] button *,
+    div[data-testid="stColumn"] > div > div > button:not([key^="card_btn_"]) *,
     div[data-testid="stPopover"] > button *,
     div[data-testid="stBaseButton-secondary"] * {{
         color: {nav_btn_text} !important;
@@ -82,22 +78,20 @@ st.markdown(f"""
         font-size: 0.95rem !important;
     }}
 
-    div[data-testid="stColumn"] button:hover,
+    div[data-testid="stColumn"] > div > div > button:not([key^="card_btn_"]):hover,
     div[data-testid="stPopover"] > button:hover,
     div[data-testid="stBaseButton-secondary"]:hover {{
         border-color: #38bdf8 !important;
-        background-color: {'rgba(30, 41, 59, 0.9)' if is_dark else '#f1f5f9'} !important;
-        transform: translateY(-1px) !important;
+        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* 2. POPOVER MENU */
+    /* 2. FIX POPOVER MENU CONTAINER & POPUP CONTENTS */
     div[data-testid="stPopoverBody"] {{
         background-color: {'#0f172a' if is_dark else '#ffffff'} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 16px !important;
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5) !important;
-        padding: 14px !important;
-        backdrop-filter: blur(20px) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        padding: 12px !important;
     }}
 
     div[data-testid="stPopoverBody"] p, 
@@ -109,8 +103,8 @@ st.markdown(f"""
     div[data-testid="stPopoverBody"] button {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 10px !important;
-        margin-bottom: 8px !important;
+        border-radius: 8px !important;
+        margin-bottom: 6px !important;
     }}
 
     div[data-testid="stPopoverBody"] button p {{
@@ -120,20 +114,19 @@ st.markdown(f"""
 
     div[data-testid="stPopoverBody"] button:hover {{
         border-color: #38bdf8 !important;
-        background-color: {'#1e293b' if is_dark else '#f1f5f9'} !important;
+        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* 3. TOGGLE SWITCH */
+    /* 3. TOGGLE SWITCH CONTAINER STYLING */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         padding: 6px 14px !important;
-        border-radius: 12px !important;
+        border-radius: 10px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        height: 44px !important;
-        backdrop-filter: blur(12px) !important;
+        height: 42px !important;
     }}
 
     div[data-testid="stCheckbox"] label p {{
@@ -142,137 +135,181 @@ st.markdown(f"""
         font-size: 0.9rem !important;
     }}
 
-    /* 4. EXACT FULL CONTAINER CLICKABLE TOOL CARDS */
-    .element-container:has(button[key^="card_box_"]) button {{
-        background: {card_bg} !important;
-        border-radius: 18px !important;
-        padding: 22px 24px !important;
-        height: auto !important;
-        min-height: 155px !important;
-        width: 100% !important;
-        text-align: left !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        align-items: flex-start !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        backdrop-filter: blur(16px) !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-        white-space: normal !important;
-    }}
-
-    .element-container:has(button[key^="card_box_"]) button:hover {{
-        transform: translateY(-4px) scale(1.008) !important;
-    }}
-
-    /* Card Themes matching screenshot borders */
-    .element-container:has(button[key="card_box_prelims"]) button {{
-        border: 1px solid rgba(16, 185, 129, 0.35) !important;
-    }}
-    .element-container:has(button[key="card_box_prelims"]) button:hover {{
-        border-color: #10b981 !important;
-        box-shadow: 0 16px 30px -8px rgba(16, 185, 129, 0.3) !important;
-    }}
-
-    .element-container:has(button[key="card_box_mains"]) button {{
-        border: 1px solid rgba(59, 130, 246, 0.35) !important;
-    }}
-    .element-container:has(button[key="card_box_mains"]) button:hover {{
-        border-color: #3b82f6 !important;
-        box-shadow: 0 16px 30px -8px rgba(59, 130, 246, 0.3) !important;
-    }}
-
-    .element-container:has(button[key="card_box_csat"]) button {{
-        border: 1px solid rgba(168, 85, 247, 0.35) !important;
-    }}
-    .element-container:has(button[key="card_box_csat"]) button:hover {{
-        border-color: #a855f7 !important;
-        box-shadow: 0 16px 30px -8px rgba(168, 85, 247, 0.3) !important;
-    }}
-
-    .element-container:has(button[key="card_box_daily"]) button {{
-        border: 1px solid rgba(245, 158, 11, 0.35) !important;
-    }}
-    .element-container:has(button[key="card_box_daily"]) button:hover {{
-        border-color: #f59e0b !important;
-        box-shadow: 0 16px 30px -8px rgba(245, 158, 11, 0.3) !important;
-    }}
-
-    .element-container:has(button[key="card_box_univ"]) button {{
-        border: 1px solid rgba(99, 102, 241, 0.35) !important;
-    }}
-    .element-container:has(button[key="card_box_univ"]) button:hover {{
-        border-color: #6366f1 !important;
-        box-shadow: 0 16px 30px -8px rgba(99, 102, 241, 0.3) !important;
-    }}
-
-    .element-container:has(button[key^="card_box_"]) button p {{
-        margin: 0 !important;
-        padding: 0 !important;
-        text-align: left !important;
-        width: 100% !important;
-    }}
-
-    /* HERO SECTION & STAT BAR */
+    /* Typography & Stat Bar */
     .hero-glow-title {{
         font-size: 2.5rem;
         font-weight: 800;
-        letter-spacing: -0.02em;
-        color: #ffffff;
-        margin-bottom: 4px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        background: {'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)' if is_dark else 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)'};
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2px;
     }}
     
     .hero-sub {{
-        font-size: 1rem;
+        font-size: 1.1rem;
         color: {subtext_color};
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         font-weight: 500;
     }}
 
     .stat-box {{
         background: {stat_bg};
         border: 1px solid {stat_border};
-        border-radius: 14px;
-        padding: 14px 22px;
+        border-radius: 12px;
+        padding: 12px 20px;
         text-align: center;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(10px);
     }}
     .stat-number {{
-        font-size: 1.25rem;
+        font-size: 1.3rem;
         font-weight: 800;
-        color: #38bdf8;
+        color: {'#38bdf8' if is_dark else '#2563eb'};
     }}
     .stat-label {{
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: {subtext_color};
         text-transform: uppercase;
-        letter-spacing: 0.9px;
-        font-weight: 600;
+        letter-spacing: 0.8px;
     }}
 
-    .quiz-card {{
-        background: {'rgba(15, 23, 42, 0.5)' if is_dark else '#ffffff'};
-        border: 1px solid {'rgba(255, 255, 255, 0.08)' if is_dark else '#e2e8f0'};
-        border-radius: 16px;
-        padding: 22px;
-        margin-bottom: 20px;
-        backdrop-filter: blur(12px);
+    /* 4. FULL CLICKABLE CARD STYLING FOR STREAMLIT BUTTONS */
+    .element-container:has(button[key^="card_btn_"]) button {{
+        background: {c_bg} !important;
+        border: 1px solid {c_border} !important;
+        border-radius: 18px !important;
+        padding: 22px !important;
+        height: 185px !important;
+        width: 100% !important;
+        box-shadow: {c_shadow} !important;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        position: relative !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        backdrop-filter: blur(12px) !important;
+        text-align: left !important;
     }}
 
-    .score-banner {{
+    .element-container:has(button[key^="card_btn_"]) button::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        transition: all 0.3s ease;
+    }}
+
+    /* Card Specific Borders & Gradients */
+    .element-container:has(button[key="card_btn_prelims"]) button::before {{
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }}
+    .element-container:has(button[key="card_btn_prelims"]) button:hover {{
+        transform: translateY(-8px) scale(1.01) !important;
+        border-color: #10b98188 !important;
+        box-shadow: 0 20px 35px -10px #10b98133, 0 0 15px #10b98122 !important;
+    }}
+
+    .element-container:has(button[key="card_btn_mains"]) button::before {{
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }}
+    .element-container:has(button[key="card_btn_mains"]) button:hover {{
+        transform: translateY(-8px) scale(1.01) !important;
+        border-color: #3b82f688 !important;
+        box-shadow: 0 20px 35px -10px #3b82f633, 0 0 15px #3b82f622 !important;
+    }}
+
+    .element-container:has(button[key="card_btn_csat"]) button::before {{
+        background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+    }}
+    .element-container:has(button[key="card_btn_csat"]) button:hover {{
+        transform: translateY(-8px) scale(1.01) !important;
+        border-color: #a855f788 !important;
+        box-shadow: 0 20px 35px -10px #a855f733, 0 0 15px #a855f722 !important;
+    }}
+
+    .element-container:has(button[key="card_btn_daily"]) button::before {{
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }}
+    .element-container:has(button[key="card_btn_daily"]) button:hover {{
+        transform: translateY(-8px) scale(1.01) !important;
+        border-color: #f59e0b88 !important;
+        box-shadow: 0 20px 35px -10px #f59e0b33, 0 0 15px #f59e0b22 !important;
+    }}
+
+    .element-container:has(button[key="card_btn_univ"]) button::before {{
+        background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+    }}
+    .element-container:has(button[key="card_btn_univ"]) button:hover {{
+        transform: translateY(-8px) scale(1.01) !important;
+        border-color: #f43f5e88 !important;
+        box-shadow: 0 20px 35px -10px #f43f5e33, 0 0 15px #f43f5e22 !important;
+    }}
+
+    .element-container:has(button[key^="card_btn_"]) button:hover::before {{
+        height: 5px !important;
+    }}
+
+    .element-container:has(button[key^="card_btn_"]) button p {{
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: normal !important;
+    }}
+
+    .card-header-row {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 8px;
+    }}
+
+    .card-title-text {{
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: {'#f8fafc' if is_dark else '#0f172a'};
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }}
+
+    .card-badge {{
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }}
+
+    .card-desc {{
+        font-size: 0.88rem;
+        color: {subtext_color};
+        line-height: 1.5;
+        font-weight: 400;
+        text-align: left;
+        margin-bottom: 12px;
+    }}
+
+    .card-action-row {{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+    }}
+
+    .card-launch-btn {{
+        font-size: 0.8rem;
+        font-weight: 700;
         color: #ffffff;
-        padding: 20px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 1.4rem;
-        font-weight: 800;
-        margin-bottom: 25px;
-        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        padding: 6px 14px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -314,44 +351,68 @@ with col_toggle:
 
 st.markdown("---")
 
+def render_interactive_card(icon, title, tag, description, accent_gradient, glow_color, key_id):
+    badge_style = f"background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44;"
+    btn_style = f"background: {accent_gradient}; box-shadow: 0 4px 12px {glow_color}44;"
+    
+    html_content = f"""
+    <div style="width: 100%;">
+        <div class="card-header-row">
+            <div class="card-title-text"><span>{icon}</span> {title}</div>
+            <span class="card-badge" style="{badge_style}">{tag}</span>
+        </div>
+        <div class="card-desc">{description}</div>
+        <div class="card-action-row">
+            <div class="card-launch-btn" style="{btn_style}">Launch Tool &rarr;</div>
+        </div>
+    </div>
+    """
+    return st.button(html_content, key=key_id, use_container_width=True)
+
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
     st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Next-generation AI engine for Prelims, Mains, and CSAT practice.</div>', unsafe_allow_html=True)
 
-    # Stat Bar matching screenshot[cite: 1]
+    # Dynamic Stat Bar
     s1, s2, s3, s4 = st.columns(4)
     with s1:
-        st.markdown('<div class="stat-box"><div class="stat-number">2000–2026</div><div class="stat-label">OFFICIAL PYQS</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-box"><div class="stat-number">2000–2026</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
     with s2:
-        st.markdown('<div class="stat-box"><div class="stat-number">AI OCR 2.0</div><div class="stat-label">HANDWRITING SCAN</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-box"><div class="stat-number">AI OCR 2.0</div><div class="stat-label">Handwriting Scan</div></div>', unsafe_allow_html=True)
     with s3:
-        st.markdown('<div class="stat-box"><div class="stat-number">Real-Time</div><div class="stat-label">CURRENT AFFAIRS</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-box"><div class="stat-number">Real-Time</div><div class="stat-label">Current Affairs</div></div>', unsafe_allow_html=True)
     with s4:
-        st.markdown('<div class="stat-box"><div class="stat-number">Instant</div><div class="stat-label">MAINS EVALUATION</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-box"><div class="stat-number">Instant</div><div class="stat-label">Mains Evaluation</div></div>', unsafe_allow_html=True)
 
     st.write("")
     st.write("")
 
-    # Grid Row 1 (Clickable Native Cards matching exact design)[cite: 1]
+    # Grid Row 1
     col1, col2 = st.columns(2)
     with col1:
-        prelims_text = (
-            "🎯  Prelims PYQ Quiz                                                     PRELIMS 2000-2026\n\n"
-            "Custom test builder filtering by subject, topic, and year range with instant automated scoring.\n\n"
-            "                                                                                     Launch Tool →"
-        )
-        if st.button(prelims_text, key="card_box_prelims", use_container_width=True):
+        if render_interactive_card(
+            "🎯",
+            "Prelims PYQ Quiz",
+            "Prelims 2000–2026",
+            "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
+            "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            "#10b981",
+            "card_btn_prelims"
+        ):
             navigate_to("Prelims PYQ Quiz")
             st.rerun()
 
     with col2:
-        mains_text = (
-            "✍️  Mains PYQ Writing                                                    HANDWRITING OCR\n\n"
-            "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.\n\n"
-            "                                                                                     Launch Tool →"
-        )
-        if st.button(mains_text, key="card_box_mains", use_container_width=True):
+        if render_interactive_card(
+            "✍️",
+            "Mains PYQ Writing",
+            "Handwriting OCR",
+            "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
+            "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            "#3b82f6",
+            "card_btn_mains"
+        ):
             navigate_to("Mains PYQ Practice")
             st.rerun()
 
@@ -360,22 +421,28 @@ if st.session_state.active_page == "Home":
     # Grid Row 2
     col3, col4 = st.columns(2)
     with col3:
-        csat_text = (
-            "📊  CSAT Interactive Arena                                              QUANT & REASONING\n\n"
-            "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.\n\n"
-            "                                                                                     Launch Tool →"
-        )
-        if st.button(csat_text, key="card_box_csat", use_container_width=True):
+        if render_interactive_card(
+            "📊",
+            "CSAT Interactive Arena",
+            "Quant & Reasoning",
+            "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
+            "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
+            "#a855f7",
+            "card_btn_csat"
+        ):
             navigate_to("CSAT PYQ Quiz")
             st.rerun()
 
     with col4:
-        daily_text = (
-            "⚡  Dynamic Quiz Generator                                                    CURRENT AFFAIRS\n\n"
-            "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.\n\n"
-            "                                                                                     Launch Tool →"
-        )
-        if st.button(daily_text, key="card_box_daily", use_container_width=True):
+        if render_interactive_card(
+            "⚡",
+            "Dynamic Quiz Generator",
+            "Current Affairs",
+            "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
+            "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+            "#f59e0b",
+            "card_btn_daily"
+        ):
             navigate_to("Daily Quiz Generator")
             st.rerun()
 
@@ -384,126 +451,53 @@ if st.session_state.active_page == "Home":
     # Grid Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        univ_text = (
-            "🔍  Universal Mains Evaluator                                                ANY QUESTION\n\n"
-            "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.\n\n"
-            "                                                                                     Launch Tool →"
-        )
-        if st.button(univ_text, key="card_box_univ", use_container_width=True):
+        if render_interactive_card(
+            "🔍",
+            "Universal Mains Evaluator",
+            "Any Question",
+            "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.",
+            "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+            "#f43f5e",
+            "card_btn_univ"
+        ):
             navigate_to("Universal Mains Evaluator")
             st.rerun()
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
-    st.title("🎯 Prelims PYQ Engine (2000–2026)")
-    st.write("Configure your test parameters to generate custom UPSC statement-pattern practice sets.")
+    st.title("🎯 Prelims Past Year Question Quiz")
+    st.write("Select your criteria below to generate your custom practice test.")
 
-    # Filter Section
-    with st.container():
-        f1, f2, f3 = st.columns([2, 2, 1])
-        with f1:
-            selected_subject = st.selectbox(
-                "Select Subject", 
-                ["All Subjects", "Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"]
-            )
-        with f2:
-            year_range = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
-        with f3:
-            num_questions = st.number_input("Limit Questions", min_value=1, max_value=50, value=10)
+    col1, col2 = st.columns(2)
+    with col1:
+        subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
+    with col2:
+        years = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
 
-    if st.button("🚀 Load PYQ Test Set", type="primary", use_container_width=True):
-        st.session_state.quiz_submitted = False
-        st.session_state.user_answers = {}
+    if st.button("Generate Quiz Test", key="run_prelims", type="primary"):
         with st.spinner("Fetching questions from database..."):
             try:
-                params = {
-                    "subject": selected_subject if selected_subject != "All Subjects" else None,
-                    "year_start": year_range[0],
-                    "year_end": year_range[1],
-                    "limit": num_questions
-                }
-                res = requests.get(f"{BACKEND_URL}/api/v1/pyq/fetch", params=params, timeout=10)
+                endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
+                params = {"subject": subject, "year_start": years[0], "year_end": years[1], "exam_type": "Prelims"}
+                res = requests.get(endpoint, params=params, timeout=30)
                 if res.status_code == 200:
-                    st.session_state.active_quiz_data = res.json().get("data", [])
+                    data = res.json().get("data", [])
+                    if data:
+                        st.success(f"Loaded {len(data)} questions!")
+                        for idx, q in enumerate(data, 1):
+                            st.subheader(f"Question {idx} ({q['year']})")
+                            st.write(q["question"])
+                            if q.get("options"):
+                                st.radio("Select Your Answer:", list(q["options"].items()), format_func=lambda x: f"{x[0]}: {x[1]}", key=f"q_{q['id']}")
+                            with st.expander("Show Solution"):
+                                st.info(f"Correct Option: {q.get('correct_option', 'N/A')}")
+                                st.write(q.get("explanation", ""))
+                    else:
+                        st.warning("No questions found matching these filters. Try expanding the year range.")
                 else:
-                    st.session_state.active_quiz_data = [
-                        {
-                            "id": 1,
-                            "year": 2024,
-                            "subject": "Polity & Governance",
-                            "question": "Consider the following statements regarding the Preamble to the Indian Constitution:\n1. It is non-justiciable in nature.\n2. It can be amended without altering its basic structure.\nWhich of the statements given above is/are correct?",
-                            "options": {"A": "1 only", "B": "2 only", "C": "Both 1 and 2", "D": "Neither 1 nor 2"},
-                            "correct_option": "C",
-                            "explanation": "The Preamble is non-justiciable and can be amended under Article 368 subject to basic structure limits."
-                        },
-                        {
-                            "id": 2,
-                            "year": 2023,
-                            "subject": "Economy",
-                            "question": "Which one of the following activities constitutes real sector in the economy?\n1. Farmers harvesting their crops\n2. Textile mills converting raw cotton into fabrics\n3. A commercial bank lending money to a trading company",
-                            "options": {"A": "1 and 2 only", "B": "2 and 3 only", "C": "1 and 3 only", "D": "1, 2 and 3"},
-                            "correct_option": "A",
-                            "explanation": "Real sector refers to direct economic production of goods and non-financial services."
-                        }
-                    ]
-            except Exception:
-                st.warning("Could not establish direct connection to remote host. Loaded offline database set.")
-
-    # Render Active Test
-    if "active_quiz_data" in st.session_state and st.session_state.active_quiz_data:
-        questions = st.session_state.active_quiz_data
-        st.markdown(f"### 📋 Active Test Set ({len(questions)} Questions)")
-
-        for idx, q in enumerate(questions, 1):
-            st.markdown(f"""
-            <div class="quiz-card">
-                <strong>Question {idx}</strong> <span style="color: #38bdf8;">[{q['subject']} - {q['year']}]</span><br/><br/>
-                {q['question']}
-            </div>
-            """, unsafe_allow_html=True)
-
-            opts = q.get("options", {})
-            choice_keys = list(opts.keys())
-            
-            selected_val = st.radio(
-                f"Select option for Q{idx}:",
-                choice_keys,
-                format_func=lambda x: f"{x}: {opts[x]}",
-                key=f"opt_q_{q['id']}"
-            )
-            st.session_state.user_answers[q['id']] = selected_val
-
-            if st.session_state.quiz_submitted:
-                correct = q['correct_option']
-                user_ans = st.session_state.user_answers.get(q['id'])
-                
-                if user_ans == correct:
-                    st.success(f"✅ Correct! Option {correct}")
-                else:
-                    st.error(f"❌ Incorrect. Selected: {user_ans} | Correct: {correct}")
-                
-                with st.expander("📖 Explanation & Analysis"):
-                    st.write(q.get("explanation", "No detailed explanation available."))
-            
-            st.markdown("---")
-
-        # Submission & Score Evaluation
-        if not st.session_state.quiz_submitted:
-            if st.button("Submit & Evaluate Test", type="primary"):
-                st.session_state.quiz_submitted = True
-                st.rerun()
-        else:
-            correct_count = sum(
-                1 for q in questions if st.session_state.user_answers.get(q['id']) == q['correct_option']
-            )
-            total = len(questions)
-            marks = (correct_count * 2) - ((total - correct_count) * 0.66)
-            
-            st.markdown(f"""
-            <div class="score-banner">
-                Final Result: {correct_count} / {total} Correct | Net Marks: {marks:.2f} / {total * 2}
-            </div>
-            """, unsafe_allow_html=True)
+                    st.error("Server error loading questions.")
+            except Exception as e:
+                st.error(f"Connection error: {e}")
 
 # --- PAGE 3: MAINS PYQ ANSWER WRITING ---
 elif st.session_state.active_page == "Mains PYQ Practice":
