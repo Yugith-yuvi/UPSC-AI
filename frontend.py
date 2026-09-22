@@ -173,30 +173,29 @@ st.markdown(f"""
         letter-spacing: 0.8px;
     }}
 
-    /* CLICKABLE CARD STYLING VIA STREAMLIT CONTAINER OVERRIDES */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) {{
-        background: {c_bg} !important;
-        border: 1px solid {c_border} !important;
-        border-radius: 18px !important;
-        padding: 22px !important;
-        box-shadow: {c_shadow} !important;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        position: relative !important;
+    /* NEON CARD WRAPPER STYLES */
+    .neon-card-box {{
+        background: {c_bg};
+        border: 1px solid {c_border};
+        border-radius: 18px;
+        padding: 22px;
+        height: 220px;
+        box-shadow: {c_shadow};
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }}
 
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker):hover {{
-        transform: translateY(-6px) !important;
+    .neon-card-box:hover {{
+        transform: translateY(-6px);
     }}
 
-    /* Inverted overlay button trick to make full container clickable */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) button[aria-label="card_click"] {{
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        z-index: 10 !important;
-        opacity: 0 !important;
-        cursor: pointer !important;
+    /* ACTION BUTTON INSIDE CARD */
+    div[data-testid="stElementContainer"]:has(div.card-marker) + div[data-testid="stElementContainer"] button {{
+        margin-top: -15px !important;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -242,39 +241,32 @@ st.markdown("---")
 def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, card_id):
     st.markdown(f"""
     <style>
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}) {{
+        .card-{card_id} {{
             border-top: 3px solid {glow_color} !important;
         }}
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}):hover {{
+        .card-{card_id}:hover {{
             border-color: {glow_color}88 !important;
             box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22 !important;
         }}
     </style>
+    <div class="neon-card-box card-{card_id}">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="font-size: 1.2rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
+                    <span>{icon}</span> {title}
+                </div>
+                <span style="font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
+            </div>
+            <div style="font-size: 0.88rem; color: {subtext_color}; line-height: 1.5; font-weight: 400; text-align: left; white-space: normal;">{description}</div>
+        </div>
+    </div>
     """, unsafe_allow_html=True)
     
-    with st.container(border=True):
-        st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
-        
-        # Upper portion
-        st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div style="font-size: 1.2rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
-                <span>{icon}</span> {title}
-            </div>
-            <span style="font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
-        </div>
-        <div style="font-size: 0.88rem; color: {subtext_color}; line-height: 1.5; font-weight: 400; text-align: left; margin-bottom: 20px;">{description}</div>
-        <div style="display: flex; justify-content: flex-end; align-items: center;">
-            <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 6px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px {glow_color}44;">
-                Launch Tool &rarr;
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Invisible full-card overlay button
-        if st.button("card_click", key=f"card_btn_{card_id}", help=f"Open {title}"):
-            navigate_to(target_page)
-            st.rerun()
+    st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
+    
+    if st.button(f"Launch {title} →", key=f"card_btn_{card_id}", use_container_width=True, type="primary"):
+        navigate_to(target_page)
+        st.rerun()
 
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
