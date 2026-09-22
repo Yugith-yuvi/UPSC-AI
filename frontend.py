@@ -35,45 +35,40 @@ def navigate_to(page_name):
 
 is_dark = st.session_state.theme == "Dark"
 
-# Premium SaaS Color Tokens
-bg_color = "#07090e" if is_dark else "#f8fafc"
+# Premium High-Contrast SaaS Palette
+bg_color = "#080c14" if is_dark else "#f4f6fb"
 text_color = "#f8fafc" if is_dark else "#0f172a"
-subtext_color = "#94a3b8" if is_dark else "#64748b"
+subtext_color = "#94a3b8" if is_dark else "#475569"
 
-nav_btn_bg = "rgba(15, 23, 42, 0.75)" if is_dark else "#ffffff"
-nav_btn_border = "rgba(255, 255, 255, 0.12)" if is_dark else "#cbd5e1"
+nav_btn_bg = "rgba(15, 23, 42, 0.85)" if is_dark else "#ffffff"
+nav_btn_border = "rgba(255, 255, 255, 0.15)" if is_dark else "#cbd5e1"
 nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
 
-stat_bg = "rgba(15, 23, 42, 0.6)" if is_dark else "#ffffff"
-stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
-
-card_bg = "rgba(15, 23, 42, 0.5)" if is_dark else "#ffffff"
-card_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
-
-# Inject Custom High-End SaaS CSS
+# Dynamic Styling Injection
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@500;600;700;800&display=swap');
 
     /* Global Base Theme */
     html, body, [class*="stApp"] {{
-        font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
         background-color: {bg_color} !important;
         color: {text_color} !important;
     }}
 
-    /* 1. TOP NAV & MENU BUTTONS */
+    /* NAVIGATION BUTTONS & POPOVERS */
     div[data-testid="stColumn"] button,
     div[data-testid="stPopover"] > button,
     div[data-testid="stBaseButton-secondary"] {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 12px !important;
-        height: 44px !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 14px !important;
+        height: 48px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
         backdrop-filter: blur(12px) !important;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         color: {nav_btn_text} !important;
+        font-family: 'Outfit', sans-serif !important;
     }}
 
     div[data-testid="stColumn"] button *,
@@ -81,115 +76,167 @@ st.markdown(f"""
     div[data-testid="stBaseButton-secondary"] * {{
         color: {nav_btn_text} !important;
         fill: {nav_btn_text} !important;
-        font-weight: 600 !important;
-        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
     }}
 
     div[data-testid="stColumn"] button:hover,
     div[data-testid="stPopover"] > button:hover,
     div[data-testid="stBaseButton-secondary"]:hover {{
         border-color: #38bdf8 !important;
-        background-color: {'rgba(30, 41, 59, 0.9)' if is_dark else '#f1f5f9'} !important;
-        transform: translateY(-1px) !important;
+        background-color: {'#1e293b' if is_dark else '#e2e8f0'} !important;
+        transform: translateY(-2px) !important;
     }}
 
-    /* 2. POPOVER MENU CONTAINER & CONTENTS */
-    div[data-testid="stPopoverBody"] {{
-        background-color: {'#0f172a' if is_dark else '#ffffff'} !important;
-        border: 1px solid {nav_btn_border} !important;
-        border-radius: 16px !important;
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5) !important;
-        padding: 14px !important;
-        backdrop-filter: blur(20px) !important;
-    }}
-
-    div[data-testid="stPopoverBody"] p, 
-    div[data-testid="stPopoverBody"] span,
-    div[data-testid="stPopoverBody"] strong {{
-        color: {text_color} !important;
-    }}
-
-    div[data-testid="stPopoverBody"] button {{
-        background-color: {nav_btn_bg} !important;
-        border: 1px solid {nav_btn_border} !important;
-        border-radius: 10px !important;
-        margin-bottom: 8px !important;
-    }}
-
-    div[data-testid="stPopoverBody"] button p {{
-        color: {nav_btn_text} !important;
-        font-weight: 600 !important;
-    }}
-
-    div[data-testid="stPopoverBody"] button:hover {{
-        border-color: #38bdf8 !important;
-        background-color: {'#1e293b' if is_dark else '#f1f5f9'} !important;
-    }}
-
-    /* 3. TOGGLE SWITCH CONTAINER STYLING */
+    /* TOGGLE SWITCH */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
-        padding: 6px 14px !important;
-        border-radius: 12px !important;
+        padding: 6px 16px !important;
+        border-radius: 14px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        height: 44px !important;
-        backdrop-filter: blur(12px) !important;
+        height: 48px !important;
     }}
 
     div[data-testid="stCheckbox"] label p {{
         color: {nav_btn_text} !important;
-        font-weight: 600 !important;
-        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
     }}
 
-    /* 4. HIGH-END SAAS CLICKABLE TOOL CARDS */
+    /* VIBRANT HERO TITLE & STATS */
+    .hero-container {{
+        text-align: center;
+        padding: 20px 0 35px 0;
+    }}
+
+    .hero-glow-title {{
+        font-family: 'Outfit', sans-serif;
+        font-size: 3.4rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 40%, #c084fc 80%, #f472b6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+        text-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+    }}
+
+    .hero-sub {{
+        font-size: 1.25rem;
+        color: {subtext_color};
+        font-weight: 600;
+        max-width: 700px;
+        margin: 0 auto;
+    }}
+
+    .stat-card {{
+        background: {'linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)' if is_dark else 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)'};
+        border: 1px solid {'rgba(255, 255, 255, 0.12)' if is_dark else '#e2e8f0'};
+        border-radius: 18px;
+        padding: 18px 20px;
+        text-align: center;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }}
+    
+    .stat-card:hover {{
+        transform: translateY(-3px);
+    }}
+
+    .stat-number {{
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+    }}
+    
+    .stat-label {{
+        font-size: 0.8rem;
+        color: {subtext_color};
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        margin-top: 4px;
+    }}
+
+    /* VIBRANT LARGE FEATURE CARDS */
     .element-container:has(button[key^="card_box_"]) button {{
-        background: {card_bg} !important;
-        border: 1px solid {card_border} !important;
-        border-radius: 18px !important;
-        padding: 24px !important;
-        height: auto !important;
-        min-height: 150px !important;
+        border-radius: 24px !important;
+        padding: 28px !important;
+        min-height: 220px !important;
         width: 100% !important;
         text-align: left !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-start !important;
         align-items: flex-start !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        backdrop-filter: blur(16px) !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        backdrop-filter: blur(20px) !important;
         white-space: normal !important;
+        position: relative !important;
+        overflow: hidden !important;
     }}
 
     .element-container:has(button[key^="card_box_"]) button:hover {{
-        transform: translateY(-4px) scale(1.01) !important;
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3) !important;
+        transform: translateY(-8px) scale(1.015) !important;
     }}
 
-    /* Card Themes */
+    /* CARD 1: PRELIMS (EMERALD VIBE) */
+    .element-container:has(button[key="card_box_prelims"]) button {{
+        background: {'linear-gradient(135deg, rgba(6, 78, 59, 0.35) 0%, rgba(15, 23, 42, 0.85) 100%)' if is_dark else 'linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%)'} !important;
+        border: 2px solid {'rgba(16, 185, 129, 0.4)' if is_dark else '#a7f3d0'} !important;
+        box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.2) !important;
+    }}
     .element-container:has(button[key="card_box_prelims"]) button:hover {{
         border-color: #10b981 !important;
-        box-shadow: 0 16px 30px -8px rgba(16, 185, 129, 0.25) !important;
+        box-shadow: 0 22px 40px -10px rgba(16, 185, 129, 0.4) !important;
+    }}
+
+    /* CARD 2: MAINS (ROYAL BLUE VIBE) */
+    .element-container:has(button[key="card_box_mains"]) button {{
+        background: {'linear-gradient(135deg, rgba(30, 58, 138, 0.35) 0%, rgba(15, 23, 42, 0.85) 100%)' if is_dark else 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)'} !important;
+        border: 2px solid {'rgba(59, 130, 246, 0.4)' if is_dark else '#bfdbfe'} !important;
+        box-shadow: 0 12px 30px -10px rgba(59, 130, 246, 0.2) !important;
     }}
     .element-container:has(button[key="card_box_mains"]) button:hover {{
         border-color: #3b82f6 !important;
-        box-shadow: 0 16px 30px -8px rgba(59, 130, 246, 0.25) !important;
+        box-shadow: 0 22px 40px -10px rgba(59, 130, 246, 0.4) !important;
+    }}
+
+    /* CARD 3: CSAT (PURPLE VIBE) */
+    .element-container:has(button[key="card_box_csat"]) button {{
+        background: {'linear-gradient(135deg, rgba(88, 28, 135, 0.35) 0%, rgba(15, 23, 42, 0.85) 100%)' if is_dark else 'linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%)'} !important;
+        border: 2px solid {'rgba(168, 85, 247, 0.4)' if is_dark else '#e9d5ff'} !important;
+        box-shadow: 0 12px 30px -10px rgba(168, 85, 247, 0.2) !important;
     }}
     .element-container:has(button[key="card_box_csat"]) button:hover {{
         border-color: #a855f7 !important;
-        box-shadow: 0 16px 30px -8px rgba(168, 85, 247, 0.25) !important;
+        box-shadow: 0 22px 40px -10px rgba(168, 85, 247, 0.4) !important;
+    }}
+
+    /* CARD 4: DAILY QUIZ (AMBER VIBE) */
+    .element-container:has(button[key="card_box_daily"]) button {{
+        background: {'linear-gradient(135deg, rgba(120, 53, 15, 0.35) 0%, rgba(15, 23, 42, 0.85) 100%)' if is_dark else 'linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)'} !important;
+        border: 2px solid {'rgba(245, 158, 11, 0.4)' if is_dark else '#fde68a'} !important;
+        box-shadow: 0 12px 30px -10px rgba(245, 158, 11, 0.2) !important;
     }}
     .element-container:has(button[key="card_box_daily"]) button:hover {{
         border-color: #f59e0b !important;
-        box-shadow: 0 16px 30px -8px rgba(245, 158, 11, 0.25) !important;
+        box-shadow: 0 22px 40px -10px rgba(245, 158, 11, 0.4) !important;
+    }}
+
+    /* CARD 5: UNIVERSAL EVALUATOR (INDIGO VIBE) */
+    .element-container:has(button[key="card_box_univ"]) button {{
+        background: {'linear-gradient(135deg, rgba(49, 46, 129, 0.35) 0%, rgba(15, 23, 42, 0.85) 100%)' if is_dark else 'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)'} !important;
+        border: 2px solid {'rgba(99, 102, 241, 0.4)' if is_dark else '#c7d2fe'} !important;
+        box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.2) !important;
     }}
     .element-container:has(button[key="card_box_univ"]) button:hover {{
         border-color: #6366f1 !important;
-        box-shadow: 0 16px 30px -8px rgba(99, 102, 241, 0.25) !important;
+        box-shadow: 0 22px 40px -10px rgba(99, 102, 241, 0.4) !important;
     }}
 
     .element-container:has(button[key^="card_box_"]) button p {{
@@ -199,73 +246,32 @@ st.markdown(f"""
         width: 100% !important;
     }}
 
-    /* HERO SECTION & STAT BAR */
-    .hero-glow-title {{
-        font-size: 2.8rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        background: {'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)' if is_dark else 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)'};
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 4px;
-    }}
-    
-    .hero-sub {{
-        font-size: 1.15rem;
-        color: {subtext_color};
-        margin-bottom: 28px;
-        font-weight: 500;
-    }}
-
-    .stat-box {{
-        background: {stat_bg};
-        border: 1px solid {stat_border};
-        border-radius: 14px;
-        padding: 14px 22px;
-        text-align: center;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }}
-    .stat-number {{
-        font-size: 1.4rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }}
-    .stat-label {{
-        font-size: 0.75rem;
-        color: {subtext_color};
-        text-transform: uppercase;
-        letter-spacing: 0.9px;
-        font-weight: 600;
-    }}
-
     .quiz-card {{
-        background: {'rgba(15, 23, 42, 0.5)' if is_dark else '#ffffff'};
-        border: 1px solid {'rgba(255, 255, 255, 0.08)' if is_dark else '#e2e8f0'};
-        border-radius: 16px;
-        padding: 22px;
+        background: {'rgba(15, 23, 42, 0.6)' if is_dark else '#ffffff'};
+        border: 1px solid {'rgba(255, 255, 255, 0.1)' if is_dark else '#e2e8f0'};
+        border-radius: 20px;
+        padding: 24px;
         margin-bottom: 20px;
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(14px);
     }}
 
     .score-banner {{
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff;
-        padding: 20px;
-        border-radius: 14px;
+        padding: 22px;
+        border-radius: 18px;
         text-align: center;
-        font-size: 1.4rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
         font-weight: 800;
         margin-bottom: 25px;
-        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 12px 30px -5px rgba(16, 185, 129, 0.4);
     }}
 </style>
 """, unsafe_allow_html=True)
 
 # --- TOP NAVIGATION BAR ---
-col_nav1, col_nav2, _ , col_toggle = st.columns([1.2, 1.2, 6.8, 2.8])
+col_nav1, col_nav2, _ , col_toggle = st.columns([1.3, 1.3, 6.4, 3.0])
 
 with col_nav1:
     if st.button("🏠 Home", key="btn_top_home", use_container_width=True):
@@ -273,8 +279,8 @@ with col_nav1:
         st.rerun()
 
 with col_nav2:
-    with st.popover("☰ Menu", use_container_width=True):
-        st.write("**Quick Tools Navigation**")
+    with st.popover("☰ Modules", use_container_width=True):
+        st.write("**Quick Navigation Hub**")
         if st.button("🎯 Prelims PYQ Quiz", key="m_p1", use_container_width=True):
             navigate_to("Prelims PYQ Quiz")
             st.rerun()
@@ -299,79 +305,83 @@ with col_toggle:
         st.session_state.theme = new_theme
         st.rerun()
 
-st.markdown("---")
+st.markdown("<br/>", unsafe_allow_html=True)
 
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
-    st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Next-generation SaaS platform for Prelims, Mains, and CSAT practice.</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="hero-container">
+        <div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>
+        <div class="hero-sub">Commercial AI learning suite for Prelims statement tests, Mains handwriting evaluation, and CSAT mastery.</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Dynamic Stat Bar
+    # Colorful Neon Metrics Bar
     s1, s2, s3, s4 = st.columns(4)
     with s1:
-        st.markdown('<div class="stat-box"><div class="stat-number">2000–2026</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="stat-card"><div class="stat-number" style="color: #10b981;">2000–2026</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
     with s2:
-        st.markdown('<div class="stat-box"><div class="stat-number">AI OCR 2.0</div><div class="stat-label">Handwriting Scan</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="stat-card"><div class="stat-number" style="color: #3b82f6;">AI OCR 2.0</div><div class="stat-label">Handwriting Scan</div></div>', unsafe_allow_html=True)
     with s3:
-        st.markdown('<div class="stat-box"><div class="stat-number">Real-Time</div><div class="stat-label">Current Affairs</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="stat-card"><div class="stat-number" style="color: #a855f7;">Real-Time</div><div class="stat-label">Current Affairs</div></div>', unsafe_allow_html=True)
     with s4:
-        st.markdown('<div class="stat-box"><div class="stat-number">Instant</div><div class="stat-label">Mains Evaluation</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="stat-card"><div class="stat-number" style="color: #f59e0b;">Instant</div><div class="stat-label">Mains Feedback</div></div>', unsafe_allow_html=True)
 
     st.write("")
     st.write("")
 
-    # Grid Row 1
+    # Grid Row 1 (Big Cards)
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(
-            "🎯 Prelims PYQ Quiz\n\nCustom test builder filtering by subject, topic, and year range with instant automated scoring.",
-            key="card_box_prelims",
-            use_container_width=True
-        ):
+        card_content_prelims = (
+            "🎯 PRELIMS PYQ ENGINE\n\n"
+            "Build customizable mock tests by subject, topic, and year range with instant automated scoring and multi-statement evaluations."
+        )
+        if st.button(card_content_prelims, key="card_box_prelims", use_container_width=True):
             navigate_to("Prelims PYQ Quiz")
             st.rerun()
 
     with col2:
-        if st.button(
-            "✍️ Mains PYQ Writing\n\nSelect official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
-            key="card_box_mains",
-            use_container_width=True
-        ):
+        card_content_mains = (
+            "✍️ MAINS PYQ WRITING ARENA\n\n"
+            "Access official Mains questions, write your answers on paper, and upload scans for detailed AI criteria-based feedback."
+        )
+        if st.button(card_content_mains, key="card_box_mains", use_container_width=True):
             navigate_to("Mains PYQ Practice")
             st.rerun()
 
     st.write("")
 
-    # Grid Row 2
+    # Grid Row 2 (Big Cards)
     col3, col4 = st.columns(2)
     with col3:
-        if st.button(
-            "📊 CSAT Interactive Arena\n\nMaster Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
-            key="card_box_csat",
-            use_container_width=True
-        ):
+        card_content_csat = (
+            "📊 CSAT INTERACTIVE ARENA\n\n"
+            "Master Quant, Logical Reasoning, and Reading Comprehension with interactive problem sets and step-by-step logic breakdowns."
+        )
+        if st.button(card_content_csat, key="card_box_csat", use_container_width=True):
             navigate_to("CSAT PYQ Quiz")
             st.rerun()
 
     with col4:
-        if st.button(
-            "⚡ Dynamic Quiz Generator\n\nGenerate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
-            key="card_box_daily",
-            use_container_width=True
-        ):
+        card_content_daily = (
+            "⚡ DYNAMIC QUIZ GENERATOR\n\n"
+            "Generate targeted practice questions dynamically from recent current affairs and core static syllabus topics."
+        )
+        if st.button(card_content_daily, key="card_box_daily", use_container_width=True):
             navigate_to("Daily Quiz Generator")
             st.rerun()
 
     st.write("")
 
-    # Grid Row 3
+    # Grid Row 3 (Centered Big Card)
     col5, _ = st.columns([1, 1])
     with col5:
-        if st.button(
-            "🔍 Universal Mains Evaluator\n\nUpload an answer sheet for ANY question—typed or handwritten—and receive structural feedback.",
-            key="card_box_univ",
-            use_container_width=True
-        ):
+        card_content_univ = (
+            "🔍 UNIVERSAL MAINS EVALUATOR\n\n"
+            "Upload handwritten or typed answers for ANY custom question to receive feedback on structure and factual depth."
+        )
+        if st.button(card_content_univ, key="card_box_univ", use_container_width=True):
             navigate_to("Universal Mains Evaluator")
             st.rerun()
 
@@ -380,7 +390,6 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     st.title("🎯 Prelims PYQ Engine (2000–2026)")
     st.write("Configure your test parameters to generate custom UPSC statement-pattern practice sets.")
 
-    # Filter Section
     with st.container():
         f1, f2, f3 = st.columns([2, 2, 1])
         with f1:
@@ -431,7 +440,6 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
             except Exception:
                 st.warning("Could not establish direct connection to remote host. Loaded offline database set.")
 
-    # Render Active Test
     if "active_quiz_data" in st.session_state and st.session_state.active_quiz_data:
         questions = st.session_state.active_quiz_data
         st.markdown(f"### 📋 Active Test Set ({len(questions)} Questions)")
@@ -469,7 +477,6 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
             
             st.markdown("---")
 
-        # Submission & Score Evaluation
         if not st.session_state.quiz_submitted:
             if st.button("Submit & Evaluate Test", type="primary"):
                 st.session_state.quiz_submitted = True
