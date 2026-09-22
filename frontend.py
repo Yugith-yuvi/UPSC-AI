@@ -330,13 +330,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     components.html(card_html, height=190)
 
     # REAL STREAMLIT BUTTON
-    if st.button(
-        f"Launch {title} →",
-        key=f"launch_{target_page}",
-        use_container_width=True
-    ):
-        navigate_to(target_page)
-        st.rerun()
+
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
     st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
