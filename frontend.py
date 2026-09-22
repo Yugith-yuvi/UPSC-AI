@@ -189,7 +189,7 @@ st.markdown(f"""
     }}
 
     /* Inverted overlay button trick to make full container clickable */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) button[aria-label="card_click"] {{
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) button[aria-label="Prelims PYQ Quiz"] {{
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
