@@ -32,7 +32,7 @@ is_dark = st.session_state.theme == "Dark"
 # Dynamic Theme Color Tokens
 bg_color = "#0b0f19" if is_dark else "#f8fafc"
 text_color = "#f1f5f9" if is_dark else "#0f172a"
-subtext_color = "#cbd5e1" if is_dark else "#475569"
+subtext_color = "#94a3b8" if is_dark else "#64748b"
 
 nav_btn_bg = "#1e293b" if is_dark else "#ffffff"
 nav_btn_border = "#334155" if is_dark else "#cbd5e1"
@@ -64,7 +64,7 @@ st.markdown(f"""
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         border-radius: 10px !important;
-        height: 44px !important;
+        height: 42px !important;
         box-shadow: none !important;
         transition: all 0.2s ease !important;
         color: {nav_btn_text} !important;
@@ -76,7 +76,7 @@ st.markdown(f"""
         color: {nav_btn_text} !important;
         fill: {nav_btn_text} !important;
         font-weight: 600 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
     }}
 
     div[data-testid="stColumn"] button:hover,
@@ -113,6 +113,11 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
+    div[data-testid="stPopoverBody"] button:hover {{
+        border-color: #38bdf8 !important;
+        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
+    }}
+
     /* 3. TOGGLE SWITCH CONTAINER STYLING */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
@@ -122,27 +127,27 @@ st.markdown(f"""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        height: 44px !important;
+        height: 42px !important;
     }}
 
     div[data-testid="stCheckbox"] label p {{
         color: {nav_btn_text} !important;
         font-weight: 600 !important;
-        font-size: 0.95rem !important;
+        font-size: 0.9rem !important;
     }}
 
     /* Typography & Stat Bar */
     .hero-glow-title {{
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         font-weight: 800;
         background: {'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)' if is_dark else 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)'};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }}
     
     .hero-sub {{
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         color: {subtext_color};
         margin-bottom: 24px;
         font-weight: 500;
@@ -151,30 +156,29 @@ st.markdown(f"""
     .stat-box {{
         background: {stat_bg};
         border: 1px solid {stat_border};
-        border-radius: 14px;
-        padding: 16px 20px;
+        border-radius: 12px;
+        padding: 12px 20px;
         text-align: center;
         backdrop-filter: blur(10px);
     }}
     .stat-number {{
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 800;
         color: {'#38bdf8' if is_dark else '#2563eb'};
     }}
     .stat-label {{
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         color: {subtext_color};
         text-transform: uppercase;
         letter-spacing: 0.8px;
-        font-weight: 600;
     }}
 
     /* CLICKABLE CARD STYLING VIA STREAMLIT CONTAINER OVERRIDES */
     div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) {{
         background: {c_bg} !important;
         border: 1px solid {c_border} !important;
-        border-radius: 20px !important;
-        padding: 26px !important;
+        border-radius: 18px !important;
+        padding: 22px !important;
         box-shadow: {c_shadow} !important;
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
         position: relative !important;
@@ -234,16 +238,16 @@ with col_toggle:
 
 st.markdown("---")
 
-# Helper function to render theme-aware native card components with boosted font sizing
+# Helper function to render theme-aware native card components
 def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, card_id):
     st.markdown(f"""
     <style>
         div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}) {{
-            border-top: 4px solid {glow_color} !important;
+            border-top: 3px solid {glow_color} !important;
         }}
         div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}):hover {{
-            border-color: {glow_color}aa !important;
-            box-shadow: 0 20px 35px -10px {glow_color}44, 0 0 20px {glow_color}22 !important;
+            border-color: {glow_color}88 !important;
+            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22 !important;
         }}
     </style>
     """, unsafe_allow_html=True)
@@ -251,17 +255,17 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     with st.container(border=True):
         st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
         
-        # Upper portion with boosted fonts
+        # Increased font sizes inside card to fill space
         st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-            <div style="font-size: 1.45rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 1.6rem;">{icon}</span> {title}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
+                <span>{icon}</span> {title}
             </div>
-            <span style="font-size: 0.78rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}55; text-transform: uppercase; letter-spacing: 0.8px;">{tag}</span>
+            <span style="font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
         </div>
         <div style="font-size: 1.05rem; color: {subtext_color}; line-height: 1.6; font-weight: 400; text-align: left; margin-bottom: 24px;">{description}</div>
         <div style="display: flex; justify-content: flex-end; align-items: center;">
-            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px {glow_color}44;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 8px 16px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px {glow_color}44;">
                 Launch Tool &rarr;
             </div>
         </div>
