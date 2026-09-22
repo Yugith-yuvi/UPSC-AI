@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 import os
 
@@ -41,11 +42,6 @@ nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
 stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
-c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
-c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
-c_title = "#f8fafc" if is_dark else "#0f172a"
-c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
-
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
@@ -58,9 +54,9 @@ st.markdown(f"""
     }}
 
     /* 1. TOP NAV TRIGGER BUTTONS */
-    div[data-testid="stColumn"] button:not(.launch-btn-trigger),
+    div[data-testid="stColumn"] button,
     div[data-testid="stPopover"] > button,
-    div[data-testid="stBaseButton-secondary"]:not(.launch-btn-trigger) {{
+    div[data-testid="stBaseButton-secondary"] {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         border-radius: 10px !important;
@@ -70,18 +66,18 @@ st.markdown(f"""
         color: {nav_btn_text} !important;
     }}
 
-    div[data-testid="stColumn"] button:not(.launch-btn-trigger) *,
+    div[data-testid="stColumn"] button *,
     div[data-testid="stPopover"] > button *,
-    div[data-testid="stBaseButton-secondary"]:not(.launch-btn-trigger) * {{
+    div[data-testid="stBaseButton-secondary"] * {{
         color: {nav_btn_text} !important;
         fill: {nav_btn_text} !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
     }}
 
-    div[data-testid="stColumn"] button:not(.launch-btn-trigger):hover,
+    div[data-testid="stColumn"] button:hover,
     div[data-testid="stPopover"] > button:hover,
-    div[data-testid="stBaseButton-secondary"]:not(.launch-btn-trigger):hover {{
+    div[data-testid="stBaseButton-secondary"]:hover {{
         border-color: #38bdf8 !important;
         background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
@@ -172,42 +168,6 @@ st.markdown(f"""
         text-transform: uppercase;
         letter-spacing: 0.8px;
     }}
-
-    /* CARD CONTAINER STYLING */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) {{
-        background: {c_bg} !important;
-        border: 1px solid {c_border} !important;
-        border-radius: 18px !important;
-        padding: 22px !important;
-        box-shadow: {c_shadow} !important;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }}
-
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker):hover {{
-        transform: translateY(-6px) !important;
-    }}
-
-    /* STYLING REAL STREAMLIT BUTTON AS LAUNCH TOOL PILL */
-    div.launch-btn-container button {{
-        border: none !important;
-        border-radius: 20px !important;
-        padding: 6px 18px !important;
-        height: auto !important;
-        min-height: 36px !important;
-        transition: all 0.25s ease !important;
-        cursor: pointer !important;
-    }}
-    
-    div.launch-btn-container button p {{
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 0.82rem !important;
-    }}
-
-    div.launch-btn-container button:hover {{
-        transform: translateX(4px) scale(1.03) !important;
-        filter: brightness(1.15) !important;
-    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -248,46 +208,144 @@ with col_toggle:
 
 st.markdown("---")
 
-# Helper function to render neon card with functional Streamlit Launch Button
-def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, card_id):
-    st.markdown(f"""
+# Helper function to render theme-aware card components
+def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page):
+    c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
+    c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
+    c_title = "#f8fafc" if is_dark else "#0f172a"
+    c_desc = "#94a3b8" if is_dark else "#64748b"
+    c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
+
+    card_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}) {{
-            border-top: 3px solid {glow_color} !important;
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{ font-family: 'Outfit', sans-serif; background: transparent; padding: 6px; }}
+        
+        .card {{
+            background: {c_bg};
+            border: 1px solid {c_border};
+            border-radius: 18px;
+            padding: 22px;
+            height: 175px;
+            box-shadow: {c_shadow};
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(12px);
         }}
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}):hover {{
-            border-color: {glow_color}88 !important;
-            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22 !important;
+
+        .card::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: {accent_gradient};
+            transition: all 0.3s ease;
         }}
-        div.launch-btn-c-{card_id} button {{
-            background: {accent_gradient} !important;
-            box-shadow: 0 4px 12px {glow_color}44 !important;
+
+        .card:hover {{
+            transform: translateY(-8px) scale(1.01);
+            border-color: {glow_color}88;
+            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22;
+        }}
+
+        .card:hover::before {{
+            height: 5px;
+        }}
+
+        .header-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }}
+
+        .title {{
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: {c_title};
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+
+        .badge {{
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: {glow_color}22;
+            color: {glow_color};
+            border: 1px solid {glow_color}44;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }}
+
+        .desc {{
+            font-size: 0.88rem;
+            color: {c_desc};
+            line-height: 1.5;
+            font-weight: 400;
+        }}
+
+        .action-row {{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }}
+
+        .launch-btn {{
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: {accent_gradient};
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px {glow_color}44;
+            transition: all 0.2s ease;
+        }}
+
+        .card:hover .launch-btn {{
+            transform: translateX(3px);
         }}
     </style>
-    """, unsafe_allow_html=True)
-    
-    with st.container(border=True):
-        st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
-        
-        # Header Row
-        st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <div style="font-size: 1.2rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
-                <span>{icon}</span> {title}
+    </head>
+    <body>
+        <div class="card" onclick="openPage()">
+            <div>
+                <div class="header-row">
+                    <div class="title"><span>{icon}</span> {title}</div>
+                    <span class="badge">{tag}</span>
+                </div>
+                <div class="desc">{description}</div>
             </div>
-            <span style="font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
+            <div class="action-row">
+                <div class="launch-btn">Launch Tool &rarr;</div>
+            </div>
         </div>
-        <div style="font-size: 0.88rem; color: {subtext_color}; line-height: 1.5; font-weight: 400; text-align: left; margin-bottom: 16px;">{description}</div>
-        """, unsafe_allow_html=True)
 
-        # Action Row with Functional Streamlit Launch Button
-        btn_col, _ = st.columns([1, 1])
-        with _:
-            st.markdown(f'<div class="launch-btn-container launch-btn-c-{card_id}">', unsafe_allow_html=True)
-            if st.button("Launch Tool →", key=f"launch_btn_{card_id}", use_container_width=True):
-                navigate_to(target_page)
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+        <script>
+            function openPage() {{
+                window.parent.location.href = window.parent.location.pathname + '?page={target_page}';
+            }}
+        </script>
+    </body>
+    </html>
+    """
+    components.html(card_html, height=190)
 
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
@@ -318,8 +376,7 @@ if st.session_state.active_page == "Home":
             "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
             "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             "#10b981",
-            "Prelims PYQ Quiz",
-            "1"
+            "Prelims PYQ Quiz"
         )
     with col2:
         render_neon_card(
@@ -329,8 +386,7 @@ if st.session_state.active_page == "Home":
             "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
             "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
             "#3b82f6",
-            "Mains PYQ Practice",
-            "2"
+            "Mains PYQ Practice"
         )
 
     # Grid Row 2
@@ -343,8 +399,7 @@ if st.session_state.active_page == "Home":
             "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
             "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
             "#a855f7",
-            "CSAT PYQ Quiz",
-            "3"
+            "CSAT PYQ Quiz"
         )
     with col4:
         render_neon_card(
@@ -354,8 +409,7 @@ if st.session_state.active_page == "Home":
             "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
             "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
             "#f59e0b",
-            "Daily Quiz Generator",
-            "4"
+            "Daily Quiz Generator"
         )
 
     # Grid Row 3
@@ -368,8 +422,7 @@ if st.session_state.active_page == "Home":
             "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.",
             "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
             "#f43f5e",
-            "Universal Mains Evaluator",
-            "5"
+            "Universal Mains Evaluator"
         )
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
