@@ -35,44 +35,44 @@ def navigate_to(page_name):
 
 is_dark = st.session_state.theme == "Dark"
 
-# Dynamic Theme Color Tokens
-bg_color = "#0b0f19" if is_dark else "#f8fafc"
-text_color = "#f1f5f9" if is_dark else "#0f172a"
+# Premium SaaS Color Tokens
+bg_color = "#07090e" if is_dark else "#f8fafc"
+text_color = "#f8fafc" if is_dark else "#0f172a"
 subtext_color = "#94a3b8" if is_dark else "#64748b"
 
-nav_btn_bg = "#1e293b" if is_dark else "#ffffff"
-nav_btn_border = "#334155" if is_dark else "#cbd5e1"
+nav_btn_bg = "rgba(15, 23, 42, 0.75)" if is_dark else "#ffffff"
+nav_btn_border = "rgba(255, 255, 255, 0.12)" if is_dark else "#cbd5e1"
 nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
 
-stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
+stat_bg = "rgba(15, 23, 42, 0.6)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
-card_bg = "rgba(30, 41, 59, 0.4)" if is_dark else "#ffffff"
-card_border = "rgba(255, 255, 255, 0.12)" if is_dark else "#cbd5e1"
-card_hover_border = "#38bdf8" if is_dark else "#2563eb"
-card_hover_bg = "rgba(30, 41, 59, 0.7)" if is_dark else "#f1f5f9"
+card_bg = "rgba(15, 23, 42, 0.5)" if is_dark else "#ffffff"
+card_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
+# Inject Custom High-End SaaS CSS
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
     /* Global Base Theme */
     html, body, [class*="stApp"] {{
-        font-family: 'Outfit', sans-serif !important;
+        font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
         background-color: {bg_color} !important;
         color: {text_color} !important;
     }}
 
-    /* 1. NAVIGATION BUTTONS */
+    /* 1. TOP NAV & MENU BUTTONS */
     div[data-testid="stColumn"] button,
     div[data-testid="stPopover"] > button,
     div[data-testid="stBaseButton-secondary"] {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 10px !important;
-        height: 42px !important;
-        box-shadow: none !important;
-        transition: all 0.2s ease !important;
+        border-radius: 12px !important;
+        height: 44px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: blur(12px) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         color: {nav_btn_text} !important;
     }}
 
@@ -89,16 +89,18 @@ st.markdown(f"""
     div[data-testid="stPopover"] > button:hover,
     div[data-testid="stBaseButton-secondary"]:hover {{
         border-color: #38bdf8 !important;
-        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
+        background-color: {'rgba(30, 41, 59, 0.9)' if is_dark else '#f1f5f9'} !important;
+        transform: translateY(-1px) !important;
     }}
 
-    /* 2. POPOVER MENU CONTAINER & POPUP CONTENTS */
+    /* 2. POPOVER MENU CONTAINER & CONTENTS */
     div[data-testid="stPopoverBody"] {{
         background-color: {'#0f172a' if is_dark else '#ffffff'} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 12px !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-        padding: 12px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5) !important;
+        padding: 14px !important;
+        backdrop-filter: blur(20px) !important;
     }}
 
     div[data-testid="stPopoverBody"] p, 
@@ -110,8 +112,8 @@ st.markdown(f"""
     div[data-testid="stPopoverBody"] button {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
-        border-radius: 8px !important;
-        margin-bottom: 6px !important;
+        border-radius: 10px !important;
+        margin-bottom: 8px !important;
     }}
 
     div[data-testid="stPopoverBody"] button p {{
@@ -121,7 +123,7 @@ st.markdown(f"""
 
     div[data-testid="stPopoverBody"] button:hover {{
         border-color: #38bdf8 !important;
-        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
+        background-color: {'#1e293b' if is_dark else '#f1f5f9'} !important;
     }}
 
     /* 3. TOGGLE SWITCH CONTAINER STYLING */
@@ -129,11 +131,12 @@ st.markdown(f"""
         background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         padding: 6px 14px !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        height: 42px !important;
+        height: 44px !important;
+        backdrop-filter: blur(12px) !important;
     }}
 
     div[data-testid="stCheckbox"] label p {{
@@ -142,30 +145,51 @@ st.markdown(f"""
         font-size: 0.9rem !important;
     }}
 
-    /* 4. ENTIRE BOX AS A CLICKABLE BUTTON */
+    /* 4. HIGH-END SAAS CLICKABLE TOOL CARDS */
     .element-container:has(button[key^="card_box_"]) button {{
-        background-color: {card_bg} !important;
+        background: {card_bg} !important;
         border: 1px solid {card_border} !important;
-        border-radius: 14px !important;
+        border-radius: 18px !important;
         padding: 24px !important;
         height: auto !important;
-        min-height: 130px !important;
+        min-height: 150px !important;
         width: 100% !important;
         text-align: left !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-start !important;
         align-items: flex-start !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        backdrop-filter: blur(16px) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
         white-space: normal !important;
     }}
 
     .element-container:has(button[key^="card_box_"]) button:hover {{
-        border-color: {card_hover_border} !important;
-        background-color: {card_hover_bg} !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 12px 20px -5px rgba(56, 189, 248, 0.15) !important;
+        transform: translateY(-4px) scale(1.01) !important;
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3) !important;
+    }}
+
+    /* Card Themes */
+    .element-container:has(button[key="card_box_prelims"]) button:hover {{
+        border-color: #10b981 !important;
+        box-shadow: 0 16px 30px -8px rgba(16, 185, 129, 0.25) !important;
+    }}
+    .element-container:has(button[key="card_box_mains"]) button:hover {{
+        border-color: #3b82f6 !important;
+        box-shadow: 0 16px 30px -8px rgba(59, 130, 246, 0.25) !important;
+    }}
+    .element-container:has(button[key="card_box_csat"]) button:hover {{
+        border-color: #a855f7 !important;
+        box-shadow: 0 16px 30px -8px rgba(168, 85, 247, 0.25) !important;
+    }}
+    .element-container:has(button[key="card_box_daily"]) button:hover {{
+        border-color: #f59e0b !important;
+        box-shadow: 0 16px 30px -8px rgba(245, 158, 11, 0.25) !important;
+    }}
+    .element-container:has(button[key="card_box_univ"]) button:hover {{
+        border-color: #6366f1 !important;
+        box-shadow: 0 16px 30px -8px rgba(99, 102, 241, 0.25) !important;
     }}
 
     .element-container:has(button[key^="card_box_"]) button p {{
@@ -175,60 +199,67 @@ st.markdown(f"""
         width: 100% !important;
     }}
 
-    /* Typography & Stat Bar */
+    /* HERO SECTION & STAT BAR */
     .hero-glow-title {{
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 800;
+        letter-spacing: -0.02em;
         background: {'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)' if is_dark else 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)'};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
     }}
     
     .hero-sub {{
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         color: {subtext_color};
-        margin-bottom: 24px;
+        margin-bottom: 28px;
         font-weight: 500;
     }}
 
     .stat-box {{
         background: {stat_bg};
         border: 1px solid {stat_border};
-        border-radius: 12px;
-        padding: 12px 20px;
+        border-radius: 14px;
+        padding: 14px 22px;
         text-align: center;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }}
     .stat-number {{
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         font-weight: 800;
-        color: {'#38bdf8' if is_dark else '#2563eb'};
+        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }}
     .stat-label {{
         font-size: 0.75rem;
         color: {subtext_color};
         text-transform: uppercase;
-        letter-spacing: 0.8px;
+        letter-spacing: 0.9px;
+        font-weight: 600;
     }}
 
     .quiz-card {{
-        background: {'rgba(30, 41, 59, 0.4)' if is_dark else '#ffffff'};
+        background: {'rgba(15, 23, 42, 0.5)' if is_dark else '#ffffff'};
         border: 1px solid {'rgba(255, 255, 255, 0.08)' if is_dark else '#e2e8f0'};
-        border-radius: 14px;
-        padding: 20px;
+        border-radius: 16px;
+        padding: 22px;
         margin-bottom: 20px;
+        backdrop-filter: blur(12px);
     }}
 
     .score-banner {{
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff;
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 14px;
         text-align: center;
         font-size: 1.4rem;
-        font-weight: 700;
+        font-weight: 800;
         margin-bottom: 25px;
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -273,7 +304,7 @@ st.markdown("---")
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
     st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Next-generation AI engine for Prelims, Mains, and CSAT practice.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Next-generation SaaS platform for Prelims, Mains, and CSAT practice.</div>', unsafe_allow_html=True)
 
     # Dynamic Stat Bar
     s1, s2, s3, s4 = st.columns(4)
