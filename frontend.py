@@ -526,7 +526,7 @@ elif st.session_state.active_page == "Universal Mains Evaluator":
             st.markdown("### 📊 Evaluation Summary")
             st.write("**Handwriting Readability:** Excellent")
             st.write("**Relevance to Question:** 80%")
-            st.write("**Model Answer Comparison:** Added key constitutional articles missing from user response.")import streamlit as st
+            st.write("**Model Answer Comparison:** Added key constitutional articles missing from user response.")
 import streamlit.components.v1 as components
 import requests
 import os
