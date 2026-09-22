@@ -255,17 +255,17 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     with st.container(border=True):
         st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
         
-        # Increased font sizes inside card to fill space
+        # Upper portion
         st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <div style="font-size: 1.5rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="font-size: 1.2rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
                 <span>{icon}</span> {title}
             </div>
-            <span style="font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
+            <span style="font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
         </div>
-        <div style="font-size: 1.05rem; color: {subtext_color}; line-height: 1.6; font-weight: 400; text-align: left; margin-bottom: 24px;">{description}</div>
+        <div style="font-size: 0.88rem; color: {subtext_color}; line-height: 1.5; font-weight: 400; text-align: left; margin-bottom: 20px;">{description}</div>
         <div style="display: flex; justify-content: flex-end; align-items: center;">
-            <div style="font-size: 0.9rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 8px 16px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px {glow_color}44;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 6px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px {glow_color}44;">
                 Launch Tool &rarr;
             </div>
         </div>
