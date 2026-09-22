@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import requests
 import os
 
@@ -168,6 +167,35 @@ st.markdown(f"""
         text-transform: uppercase;
         letter-spacing: 0.8px;
     }}
+
+    /* Custom Native Card Styling */
+    div[data-testid="stVerticalBlockBorderWrapper"] {{
+        border-radius: 18px !important;
+        background: {'linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)' if is_dark else '#ffffff'} !important;
+        border: 1px solid {'rgba(255, 255, 255, 0.1)' if is_dark else '#e2e8f0'} !important;
+        box-shadow: {'0 10px 25px -5px rgba(0, 0, 0, 0.4)' if is_dark else '0 4px 12px rgba(15, 23, 42, 0.05)'} !important;
+        padding: 18px !important;
+        transition: all 0.3s ease !important;
+    }}
+
+    div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
+        transform: translateY(-4px);
+        border-color: #38bdf8 !important;
+    }}
+
+    .card-title {{
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: {'#f8fafc' if is_dark else '#0f172a'};
+    }}
+
+    .card-desc {{
+        font-size: 0.88rem;
+        color: {subtext_color};
+        line-height: 1.5;
+        margin-top: 6px;
+        margin-bottom: 12px;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -208,144 +236,17 @@ with col_toggle:
 
 st.markdown("---")
 
-# Helper function to render theme-aware card components
-def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page):
-    c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
-    c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
-    c_title = "#f8fafc" if is_dark else "#0f172a"
-    c_desc = "#94a3b8" if is_dark else "#64748b"
-    c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
-
-    card_html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        body {{ font-family: 'Outfit', sans-serif; background: transparent; padding: 6px; }}
-        
-        .card {{
-            background: {c_bg};
-            border: 1px solid {c_border};
-            border-radius: 18px;
-            padding: 22px;
-            height: 175px;
-            box-shadow: {c_shadow};
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            backdrop-filter: blur(12px);
-        }}
-
-        .card::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: {accent_gradient};
-            transition: all 0.3s ease;
-        }}
-
-        .card:hover {{
-            transform: translateY(-8px) scale(1.01);
-            border-color: {glow_color}88;
-            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22;
-        }}
-
-        .card:hover::before {{
-            height: 5px;
-        }}
-
-        .header-row {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }}
-
-        .title {{
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: {c_title};
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }}
-
-        .badge {{
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: {glow_color}22;
-            color: {glow_color};
-            border: 1px solid {glow_color}44;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }}
-
-        .desc {{
-            font-size: 0.88rem;
-            color: {c_desc};
-            line-height: 1.5;
-            font-weight: 400;
-        }}
-
-        .action-row {{
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }}
-
-        .launch-btn {{
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #ffffff;
-            background: {accent_gradient};
-            padding: 6px 14px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 12px {glow_color}44;
-            transition: all 0.2s ease;
-        }}
-
-        .card:hover .launch-btn {{
-            transform: translateX(3px);
-        }}
-    </style>
-    </head>
-    <body>
-        <div class="card" onclick="openPage()">
-            <div>
-                <div class="header-row">
-                    <div class="title"><span>{icon}</span> {title}</div>
-                    <span class="badge">{tag}</span>
-                </div>
-                <div class="desc">{description}</div>
-            </div>
-            <div class="action-row">
-                <div class="launch-btn">Launch Tool &rarr;</div>
-            </div>
-        </div>
-
-        <script>
-            function openPage() {{
-                window.parent.location.href = window.parent.location.pathname + '?page={target_page}';
-            }}
-        </script>
-    </body>
-    </html>
-    """
-    components.html(card_html, height=190)
+def render_native_card(icon, title, tag, description, target_page, btn_key):
+    with st.container(border=True):
+        col_t, col_b = st.columns([8, 2])
+        with col_t:
+            st.markdown(f'<div class="card-title">{icon} {title}</div>', unsafe_allow_html=True)
+        with col_b:
+            st.caption(f"**{tag}**")
+        st.markdown(f'<div class="card-desc">{description}</div>', unsafe_allow_html=True)
+        if st.button("Launch Tool →", key=btn_key, use_container_width=True, type="primary"):
+            navigate_to(target_page)
+            st.rerun()
 
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
@@ -369,60 +270,40 @@ if st.session_state.active_page == "Home":
     # Grid Row 1
     col1, col2 = st.columns(2)
     with col1:
-        render_neon_card(
-            "🎯",
-            "Prelims PYQ Quiz",
-            "Prelims 2000–2026",
+        render_native_card(
+            "🎯", "Prelims PYQ Quiz", "Prelims 2000–2026",
             "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
-            "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-            "#10b981",
-            "Prelims PYQ Quiz"
+            "Prelims PYQ Quiz", "btn_card_1"
         )
     with col2:
-        render_neon_card(
-            "✍️",
-            "Mains PYQ Writing",
-            "Handwriting OCR",
+        render_native_card(
+            "✍️", "Mains PYQ Writing", "Handwriting OCR",
             "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
-            "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-            "#3b82f6",
-            "Mains PYQ Practice"
+            "Mains PYQ Practice", "btn_card_2"
         )
 
     # Grid Row 2
     col3, col4 = st.columns(2)
     with col3:
-        render_neon_card(
-            "📊",
-            "CSAT Interactive Arena",
-            "Quant & Reasoning",
+        render_native_card(
+            "📊", "CSAT Interactive Arena", "Quant & Reasoning",
             "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
-            "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
-            "#a855f7",
-            "CSAT PYQ Quiz"
+            "CSAT PYQ Quiz", "btn_card_3"
         )
     with col4:
-        render_neon_card(
-            "⚡",
-            "Dynamic Quiz Generator",
-            "Current Affairs",
+        render_native_card(
+            "⚡", "Dynamic Quiz Generator", "Current Affairs",
             "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
-            "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-            "#f59e0b",
-            "Daily Quiz Generator"
+            "Daily Quiz Generator", "btn_card_4"
         )
 
     # Grid Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        render_neon_card(
-            "🔍",
-            "Universal Mains Evaluator",
-            "Any Question",
+        render_native_card(
+            "🔍", "Universal Mains Evaluator", "Any Question",
             "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.",
-            "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
-            "#f43f5e",
-            "Universal Mains Evaluator"
+            "Universal Mains Evaluator", "btn_card_5"
         )
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
