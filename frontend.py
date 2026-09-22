@@ -91,14 +91,12 @@ st.markdown(f"""
         padding: 12px !important;
     }}
 
-    /* Style text inside the open popover container */
     div[data-testid="stPopoverBody"] p, 
     div[data-testid="stPopoverBody"] span,
     div[data-testid="stPopoverBody"] strong {{
         color: {text_color} !important;
     }}
 
-    /* Style buttons inside the popover list */
     div[data-testid="stPopoverBody"] button {{
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
@@ -436,7 +434,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     with col1:
         subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
     with col2:
-        years = st.slider("Select Year Range", 2000, 2026, (2015, 2025))
+        years = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
 
     if st.button("Generate Quiz Test", key="run_prelims", type="primary"):
         with st.spinner("Fetching questions from database..."):
