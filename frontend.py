@@ -32,7 +32,7 @@ is_dark = st.session_state.theme == "Dark"
 # Dynamic Theme Color Tokens
 bg_color = "#0b0f19" if is_dark else "#f8fafc"
 text_color = "#f1f5f9" if is_dark else "#0f172a"
-subtext_color = "#94a3b8" if is_dark else "#64748b"
+subtext_color = "#cbd5e1" if is_dark else "#475569"  # Brighter text for better contrast
 
 nav_btn_bg = "#1e293b" if is_dark else "#ffffff"
 nav_btn_border = "#334155" if is_dark else "#cbd5e1"
@@ -64,7 +64,7 @@ st.markdown(f"""
         background-color: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
         border-radius: 10px !important;
-        height: 42px !important;
+        height: 44px !important;
         box-shadow: none !important;
         transition: all 0.2s ease !important;
         color: {nav_btn_text} !important;
@@ -76,7 +76,7 @@ st.markdown(f"""
         color: {nav_btn_text} !important;
         fill: {nav_btn_text} !important;
         font-weight: 600 !important;
-        font-size: 0.95rem !important;
+        font-size: 1rem !important;
     }}
 
     div[data-testid="stColumn"] button:hover,
@@ -113,11 +113,6 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
-    div[data-testid="stPopoverBody"] button:hover {{
-        border-color: #38bdf8 !important;
-        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
-    }}
-
     /* 3. TOGGLE SWITCH CONTAINER STYLING */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
@@ -127,27 +122,27 @@ st.markdown(f"""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        height: 42px !important;
+        height: 44px !important;
     }}
 
     div[data-testid="stCheckbox"] label p {{
         color: {nav_btn_text} !important;
         font-weight: 600 !important;
-        font-size: 0.9rem !important;
+        font-size: 0.95rem !important;
     }}
 
     /* Typography & Stat Bar */
     .hero-glow-title {{
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 800;
         background: {'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)' if is_dark else 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)'};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
     }}
     
     .hero-sub {{
-        font-size: 1.1rem;
+        font-size: 1.25rem;
         color: {subtext_color};
         margin-bottom: 24px;
         font-weight: 500;
@@ -156,46 +151,48 @@ st.markdown(f"""
     .stat-box {{
         background: {stat_bg};
         border: 1px solid {stat_border};
-        border-radius: 12px;
-        padding: 12px 20px;
+        border-radius: 14px;
+        padding: 16px 20px;
         text-align: center;
         backdrop-filter: blur(10px);
     }}
     .stat-number {{
-        font-size: 1.3rem;
+        font-size: 1.5rem;
         font-weight: 800;
         color: {'#38bdf8' if is_dark else '#2563eb'};
     }}
     .stat-label {{
-        font-size: 0.75rem;
+        font-size: 0.85rem;
         color: {subtext_color};
         text-transform: uppercase;
         letter-spacing: 0.8px;
+        font-weight: 600;
     }}
 
-    /* NEON CARD WRAPPER STYLES */
-    .neon-card-box {{
-        background: {c_bg};
-        border: 1px solid {c_border};
-        border-radius: 18px;
-        padding: 22px;
-        height: 220px;
-        box-shadow: {c_shadow};
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    /* CLICKABLE CARD STYLING VIA STREAMLIT CONTAINER OVERRIDES */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) {{
+        background: {c_bg} !important;
+        border: 1px solid {c_border} !important;
+        border-radius: 20px !important;
+        padding: 26px !important;
+        box-shadow: {c_shadow} !important;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        position: relative !important;
     }}
 
-    .neon-card-box:hover {{
-        transform: translateY(-6px);
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker):hover {{
+        transform: translateY(-6px) !important;
     }}
 
-    /* ACTION BUTTON INSIDE CARD */
-    div[data-testid="stElementContainer"]:has(div.card-marker) + div[data-testid="stElementContainer"] button {{
-        margin-top: -15px !important;
+    /* Inverted overlay button trick to make full container clickable */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) button[aria-label="card_click"] {{
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 10 !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -237,36 +234,43 @@ with col_toggle:
 
 st.markdown("---")
 
-# Helper function to render theme-aware native card components
+# Helper function to render theme-aware native card components with boosted font sizing
 def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, card_id):
     st.markdown(f"""
     <style>
-        .card-{card_id} {{
-            border-top: 3px solid {glow_color} !important;
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}) {{
+            border-top: 4px solid {glow_color} !important;
         }}
-        .card-{card_id}:hover {{
-            border-color: {glow_color}88 !important;
-            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22 !important;
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-{card_id}):hover {{
+            border-color: {glow_color}aa !important;
+            box-shadow: 0 20px 35px -10px {glow_color}44, 0 0 20px {glow_color}22 !important;
         }}
     </style>
-    <div class="neon-card-box card-{card_id}">
-        <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <div style="font-size: 1.2rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
-                    <span>{icon}</span> {title}
-                </div>
-                <span style="font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
-            </div>
-            <div style="font-size: 0.88rem; color: {subtext_color}; line-height: 1.5; font-weight: 400; text-align: left; white-space: normal;">{description}</div>
-        </div>
-    </div>
     """, unsafe_allow_html=True)
     
-    st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
-    
-    if st.button(f"Launch {title} →", key=f"card_btn_{card_id}", use_container_width=True, type="primary"):
-        navigate_to(target_page)
-        st.rerun()
+    with st.container(border=True):
+        st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
+        
+        # Upper portion with boosted fonts
+        st.markdown(f"""
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div style="font-size: 1.45rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.6rem;">{icon}</span> {title}
+            </div>
+            <span style="font-size: 0.78rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}55; text-transform: uppercase; letter-spacing: 0.8px;">{tag}</span>
+        </div>
+        <div style="font-size: 1.05rem; color: {subtext_color}; line-height: 1.6; font-weight: 400; text-align: left; margin-bottom: 24px;">{description}</div>
+        <div style="display: flex; justify-content: flex-end; align-items: center;">
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px {glow_color}44;">
+                Launch Tool &rarr;
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Invisible full-card overlay button
+        if st.button("card_click", key=f"card_btn_{card_id}", help=f"Open {title}"):
+            navigate_to(target_page)
+            st.rerun()
 
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
@@ -350,101 +354,3 @@ if st.session_state.active_page == "Home":
             "Universal Mains Evaluator",
             "5"
         )
-
-# --- PAGE 2: PRELIMS PYQ QUIZ ---
-elif st.session_state.active_page == "Prelims PYQ Quiz":
-    st.title("🎯 Prelims Past Year Question Quiz")
-    st.write("Select your criteria below to generate your custom practice test.")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
-    with col2:
-        years = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
-
-    if st.button("Generate Quiz Test", key="run_prelims", type="primary"):
-        with st.spinner("Fetching questions from database..."):
-            try:
-                endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
-                params = {"subject": subject, "year_start": years[0], "year_end": years[1], "exam_type": "Prelims"}
-                res = requests.get(endpoint, params=params, timeout=30)
-                if res.status_code == 200:
-                    data = res.json().get("data", [])
-                    if data:
-                        st.success(f"Loaded {len(data)} questions!")
-                        for idx, q in enumerate(data, 1):
-                            st.subheader(f"Question {idx} ({q['year']})")
-                            st.write(q["question"])
-                            if q.get("options"):
-                                st.radio("Select Your Answer:", list(q["options"].items()), format_func=lambda x: f"{x[0]}: {x[1]}", key=f"q_{q['id']}")
-                            with st.expander("Show Solution"):
-                                st.info(f"Correct Option: {q.get('correct_option', 'N/A')}")
-                                st.write(q.get("explanation", ""))
-                    else:
-                        st.warning("No questions found matching these filters. Try expanding the year range.")
-                else:
-                    st.error("Server error loading questions.")
-            except Exception as e:
-                st.error(f"Connection error: {e}")
-
-# --- PAGE 3: MAINS PYQ ANSWER WRITING ---
-elif st.session_state.active_page == "Mains PYQ Practice":
-    st.title("✍️ Mains PYQ Answer Practice")
-    st.write("Pick a subject, get an official question, write your answer on paper, and upload your sheet.")
-
-    subject = st.selectbox("Select Mains Subject", ["GS 1 - History & Society", "GS 2 - Polity & IR", "GS 3 - Economy & Environment", "GS 4 - Ethics"])
-    
-    if st.button("Get Mains Question", key="get_mains_q"):
-        st.info("📌 **Sample Question:** Evaluate the impact of climate change on coastal agriculture in India, suggesting mitigation strategies. (15 Marks, 250 Words)")
-
-    uploaded_file = st.file_uploader("Upload Scanned Answer Sheet (JPG / PNG / PDF)", type=["jpg", "jpeg", "png", "pdf"])
-    if uploaded_file and st.button("Evaluate Answer with AI", key="eval_mains_btn", type="primary"):
-        with st.spinner("AI is reading handwriting (OCR) and evaluating content against UPSC criteria..."):
-            st.success("Evaluation Complete!")
-            st.markdown("### 📝 Score: **8.5 / 15**")
-            st.markdown("**Strengths:** Clear structure, good introduction of IPCC targets.")
-            st.markdown("**Areas for Improvement:** Needs map representation of vulnerable coastal regions.")
-
-# --- PAGE 4: CSAT PYQ QUIZ ---
-elif st.session_state.active_page == "CSAT PYQ Quiz":
-    st.title("📊 CSAT Interactive Arena")
-    st.write("Practice Quant, Logical Reasoning, and Reading Comprehension questions.")
-
-    topic = st.selectbox("Select Topic", ["Reading Comprehension", "Data Interpretation", "Logical Reasoning", "Quantitative Aptitude"])
-    if st.button("Start CSAT Practice Set", key="start_csat", type="primary"):
-        st.info("Loading CSAT question set...")
-
-# --- PAGE 5: DYNAMIC PRELIMS QUIZ ---
-elif st.session_state.active_page == "Daily Quiz Generator":
-    st.title("⚡ AI Current Affairs & Static Quiz Generator")
-    st.write("Fresh questions generated on the spot using the latest UPSC statement-based pattern.")
-
-    cat = st.radio("Quiz Category", ["Current Affairs (Last 12 Months)", "Static Syllabus Mix"])
-    if st.button("Generate Fresh Questions", key="gen_daily_q", type="primary"):
-        with st.spinner("AI is creating new questions..."):
-            st.write("### Sample AI Generated Question")
-            st.write("Consider the following statements regarding Central Bank Digital Currency (CBDC):")
-            st.write("1. It is a sovereign currency issued by the RBI in digital form.")
-            st.write("2. It appears as a liability on the central bank's balance sheet.")
-            st.write("Which of the statements given above is/are correct?")
-            st.radio("Your Choice:", ["1 only", "2 only", "Both 1 and 2", "Neither 1 nor 2"])
-
-# --- PAGE 6: UNIVERSAL MAINS EVALUATOR ---
-elif st.session_state.active_page == "Universal Mains Evaluator":
-    st.title("🔍 Universal Mains Answer Evaluator")
-    st.write("Evaluate answers for ANY question—whether generated by AI or typed by you.")
-
-    option = st.radio("How would you like to provide the question?", ["Type/Paste the Question", "Question is written on the Answer Sheet"])
-    
-    if option == "Type/Paste the Question":
-        q_text = st.text_area("Enter your question here:")
-    
-    answer_sheet = st.file_uploader("Upload Scanned Answer Sheet", type=["jpg", "jpeg", "png", "pdf"], key="univ_eval")
-    
-    if answer_sheet and st.button("Run Comprehensive AI Evaluation", key="run_univ_eval", type="primary"):
-        with st.spinner("Analyzing answer structure, facts, and clarity..."):
-            st.success("Evaluation Finished!")
-            st.markdown("### 📊 Evaluation Summary")
-            st.write("**Handwriting Readability:** Excellent")
-            st.write("**Relevance to Question:** 80%")
-            st.write("**Model Answer Comparison:** Added key constitutional articles missing from user response.")
