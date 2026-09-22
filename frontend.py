@@ -173,27 +173,29 @@ st.markdown(f"""
         letter-spacing: 0.8px;
     }}
 
-    /* CLICKABLE NEON CARD BUTTON OVERRIDES */
-    div[data-testid="stElementContainer"]:has(div.card-marker) + div[data-testid="stElementContainer"] button {{
-        background: {c_bg} !important;
-        border: 1px solid {c_border} !important;
-        border-radius: 18px !important;
-        padding: 22px !important;
-        height: 185px !important;
-        box-shadow: {c_shadow} !important;
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        position: relative !important;
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        text-align: left !important;
-        align-items: stretch !important;
-        width: 100% !important;
+    /* NEON CARD WRAPPER STYLES */
+    .neon-card-box {{
+        background: {c_bg};
+        border: 1px solid {c_border};
+        border-radius: 18px;
+        padding: 22px;
+        height: 220px;
+        box-shadow: {c_shadow};
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }}
 
-    div[data-testid="stElementContainer"]:has(div.card-marker) + div[data-testid="stElementContainer"] button:hover {{
-        transform: translateY(-8px) scale(1.01) !important;
+    .neon-card-box:hover {{
+        transform: translateY(-6px);
+    }}
+
+    /* ACTION BUTTON INSIDE CARD */
+    div[data-testid="stElementContainer"]:has(div.card-marker) + div[data-testid="stElementContainer"] button {{
+        margin-top: -15px !important;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -239,30 +241,15 @@ st.markdown("---")
 def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, card_id):
     st.markdown(f"""
     <style>
-        div[data-testid="stElementContainer"]:has(div.card-{card_id}) + div[data-testid="stElementContainer"] button::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: {accent_gradient};
-            transition: all 0.3s ease;
+        .card-{card_id} {{
+            border-top: 3px solid {glow_color} !important;
         }}
-        div[data-testid="stElementContainer"]:has(div.card-{card_id}) + div[data-testid="stElementContainer"] button:hover {{
+        .card-{card_id}:hover {{
             border-color: {glow_color}88 !important;
             box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22 !important;
         }}
-        div[data-testid="stElementContainer"]:has(div.card-{card_id}) + div[data-testid="stElementContainer"] button:hover::before {{
-            height: 5px;
-        }}
     </style>
-    """, unsafe_allow_html=True)
-    
-    st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
-    
-    card_inner_html = f"""
-    <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+    <div class="neon-card-box card-{card_id}">
         <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div style="font-size: 1.2rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
@@ -272,15 +259,12 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
             </div>
             <div style="font-size: 0.88rem; color: {subtext_color}; line-height: 1.5; font-weight: 400; text-align: left; white-space: normal;">{description}</div>
         </div>
-        <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px;">
-            <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 6px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px {glow_color}44;">
-                Launch Tool &rarr;
-            </div>
-        </div>
     </div>
-    """
+    """, unsafe_allow_html=True)
     
-    if st.button(card_inner_html, key=f"card_btn_{card_id}", use_container_width=True):
+    st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
+    
+    if st.button(f"Launch {title} →", key=f"card_btn_{card_id}", use_container_width=True, type="primary"):
         navigate_to(target_page)
         st.rerun()
 
