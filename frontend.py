@@ -216,118 +216,172 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     c_desc = "#94a3b8" if is_dark else "#64748b"
     c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
 
+    # Safely encode the page name for the URL
+    import urllib.parse
+    page_url = "?page=" + urllib.parse.quote(target_page)
+
     card_html = f"""
-    <style>
-        .card {{
-            background: {c_bg};
-            border: 1px solid {c_border};
-            border-radius: 18px;
-            padding: 22px;
-            height: 175px;
-            box-shadow: {c_shadow};
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-family: 'Outfit', sans-serif;
-        }}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-        .card::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: {accent_gradient};
-        }}
+        <style>
+            * {{
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }}
 
-        .card:hover {{
-            transform: translateY(-8px) scale(1.01);
-            border-color: {glow_color}88;
-            box-shadow: 0 20px 35px -10px {glow_color}33,
-                        0 0 15px {glow_color}22;
-        }}
+            body {{
+                font-family: 'Outfit', sans-serif;
+                background: transparent;
+                padding: 6px;
+            }}
 
-        .header-row {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }}
+            .card {{
+                background: {c_bg};
+                border: 1px solid {c_border};
+                border-radius: 18px;
+                padding: 22px;
+                height: 175px;
+                width: 100%;
+                box-shadow: {c_shadow};
+                transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                backdrop-filter: blur(12px);
+            }}
 
-        .title {{
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: {c_title};
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }}
+            .card::before {{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: {accent_gradient};
+                transition: all 0.3s ease;
+            }}
 
-        .badge {{
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: {glow_color}22;
-            color: {glow_color};
-            border: 1px solid {glow_color}44;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }}
+            .card:hover {{
+                transform: translateY(-8px) scale(1.01);
+                border-color: {glow_color}88;
+                box-shadow:
+                    0 20px 35px -10px {glow_color}33,
+                    0 0 15px {glow_color}22;
+            }}
 
-        .desc {{
-            font-size: 0.88rem;
-            color: {c_desc};
-            line-height: 1.5;
-        }}
+            .card:hover::before {{
+                height: 5px;
+            }}
 
-        .action-row {{
-            display: flex;
-            justify-content: flex-end;
-        }}
+            .header-row {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }}
 
-        .launch-btn {{
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #ffffff;
-            background: {accent_gradient};
-            padding: 7px 14px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 12px {glow_color}44;
-        }}
-    </style>
+            .title {{
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: {c_title};
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }}
 
-    <div class="card">
-        <div>
-            <div class="header-row">
-                <div class="title">
-                    <span>{icon}</span> {title}
+            .badge {{
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 4px 10px;
+                border-radius: 20px;
+                background: {glow_color}22;
+                color: {glow_color};
+                border: 1px solid {glow_color}44;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+            }}
+
+            .desc {{
+                font-size: 0.88rem;
+                color: {c_desc};
+                line-height: 1.5;
+                font-weight: 400;
+            }}
+
+            .action-row {{
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }}
+
+            .launch-btn {{
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #ffffff;
+                background: {accent_gradient};
+                padding: 7px 14px;
+                border-radius: 20px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                box-shadow: 0 4px 12px {glow_color}44;
+                transition: all 0.2s ease;
+                text-decoration: none;
+                cursor: pointer;
+            }}
+
+            .launch-btn:hover {{
+                transform: translateX(3px);
+                filter: brightness(1.1);
+            }}
+        </style>
+    </head>
+
+    <body>
+
+        <div class="card">
+
+            <div>
+                <div class="header-row">
+                    <div class="title">
+                        <span>{icon}</span>
+                        {title}
+                    </div>
+
+                    <span class="badge">
+                        {tag}
+                    </span>
                 </div>
 
-                <span class="badge">{tag}</span>
+                <div class="desc">
+                    {description}
+                </div>
             </div>
 
-            <div class="desc">
-                {description}
+            <div class="action-row">
+                <a
+                    class="launch-btn"
+                    href="{page_url}"
+                    target="_top"
+                >
+                    Launch Tool &rarr;
+                </a>
             </div>
+
         </div>
 
-        <div class="action-row">
-            <div class="launch-btn">
-                Launch Tool &rarr;
-            </div>
-        </div>
-    </div>
+    </body>
+    </html>
     """
 
-    components.html(card_html, height=190)
+    # Extra height prevents the card from being cut off
+    components.html(card_html, height=215)
 
     # REAL STREAMLIT BUTTON
 
