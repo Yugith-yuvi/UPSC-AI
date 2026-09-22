@@ -526,4 +526,4 @@ elif st.session_state.active_page == "Universal Mains Evaluator":
             st.markdown("### 📊 Evaluation Summary")
             st.write("**Handwriting Readability:** Excellent")
             st.write("**Relevance to Question:** 80%")
-            st.write("**Model Answer Comparison:** Added key constitutional articles missing from user response.")z
+            st.write("**Model Answer Comparison:** Added key constitutional articles missing from user response.")
