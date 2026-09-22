@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import requests
 import os
 
@@ -41,6 +40,11 @@ nav_btn_text = "#f8fafc" if is_dark else "#0f172a"
 
 stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
+
+c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
+c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
+c_title = "#f8fafc" if is_dark else "#0f172a"
+c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
 
 st.markdown(f"""
 <style>
@@ -168,21 +172,24 @@ st.markdown(f"""
         text-transform: uppercase;
         letter-spacing: 0.8px;
     }}
-    /* CLICKABLE CARD STYLING */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) {
-        background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    /* CLICKABLE CARD STYLING VIA STREAMLIT CONTAINER OVERRIDES */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) {{
+        background: {c_bg} !important;
+        border: 1px solid {c_border} !important;
         border-radius: 18px !important;
         padding: 22px !important;
+        box-shadow: {c_shadow} !important;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
         position: relative !important;
-        transition: all 0.35s ease !important;
-    }
+    }}
 
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker):hover {
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker):hover {{
         transform: translateY(-6px) !important;
-    }
+    }}
 
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) button[aria-label="card_click"] {
+    /* Inverted overlay button trick to make full container clickable */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div.card-marker) button[aria-label="card_click"] {{
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
@@ -190,7 +197,7 @@ st.markdown(f"""
         z-index: 10 !important;
         opacity: 0 !important;
         cursor: pointer !important;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -231,8 +238,7 @@ with col_toggle:
 
 st.markdown("---")
 
-# Helper function to render theme-aware card components
-# Helper function to render theme-aware card components
+# Helper function to render theme-aware native card components
 def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, card_id):
     st.markdown(f"""
     <style>
@@ -249,27 +255,47 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     with st.container(border=True):
         st.markdown(f'<div class="card-marker card-{card_id}"></div>', unsafe_allow_html=True)
         
+        # Upper portion
         st.markdown(f"""
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <div style="font-size: 1.3rem; font-weight: 700; color: {text_color}; display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: {c_title}; display: flex; align-items: center; gap: 10px;">
                 <span>{icon}</span> {title}
             </div>
-            <span style="font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase;">{tag}</span>
+            <span style="font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}44; text-transform: uppercase; letter-spacing: 0.6px;">{tag}</span>
         </div>
-        <div style="font-size: 0.95rem; color: {subtext_color}; line-height: 1.5; margin-bottom: 20px;">{description}</div>
-        <div style="display: flex; justify-content: flex-end;">
-            <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 6px 14px; border-radius: 20px;">
+        <div style="font-size: 1.05rem; color: {subtext_color}; line-height: 1.6; font-weight: 400; text-align: left; margin-bottom: 24px;">{description}</div>
+        <div style="display: flex; justify-content: flex-end; align-items: center;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #ffffff; background: {accent_gradient}; padding: 8px 16px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px {glow_color}44;">
                 Launch Tool &rarr;
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Invisible overlay trigger button
+        # Invisible full-card overlay button
         if st.button("card_click", key=f"card_btn_{card_id}", help=f"Open {title}"):
             navigate_to(target_page)
             st.rerun()
+
 # --- PAGE 1: WELCOME DASHBOARD ---
-# Grid Row 1
+if st.session_state.active_page == "Home":
+    st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Next-generation AI engine for Prelims, Mains, and CSAT practice.</div>', unsafe_allow_html=True)
+
+    # Dynamic Stat Bar
+    s1, s2, s3, s4 = st.columns(4)
+    with s1:
+        st.markdown('<div class="stat-box"><div class="stat-number">2000–2026</div><div class="stat-label">Official PYQs</div></div>', unsafe_allow_html=True)
+    with s2:
+        st.markdown('<div class="stat-box"><div class="stat-number">AI OCR 2.0</div><div class="stat-label">Handwriting Scan</div></div>', unsafe_allow_html=True)
+    with s3:
+        st.markdown('<div class="stat-box"><div class="stat-number">Real-Time</div><div class="stat-label">Current Affairs</div></div>', unsafe_allow_html=True)
+    with s4:
+        st.markdown('<div class="stat-box"><div class="stat-number">Instant</div><div class="stat-label">Mains Evaluation</div></div>', unsafe_allow_html=True)
+
+    st.write("")
+    st.write("")
+
+    # Grid Row 1
     col1, col2 = st.columns(2)
     with col1:
         render_neon_card(
@@ -332,6 +358,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
             "Universal Mains Evaluator",
             "5"
         )
+
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
     st.title("🎯 Prelims Past Year Question Quiz")
