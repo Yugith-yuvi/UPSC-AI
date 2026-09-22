@@ -48,7 +48,9 @@ stat_bg = "rgba(30, 41, 59, 0.5)" if is_dark else "#ffffff"
 stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
 card_bg = "rgba(30, 41, 59, 0.4)" if is_dark else "#ffffff"
-card_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#cbd5e1"
+card_border = "rgba(255, 255, 255, 0.12)" if is_dark else "#cbd5e1"
+card_hover_border = "#38bdf8" if is_dark else "#2563eb"
+card_hover_bg = "rgba(30, 41, 59, 0.7)" if is_dark else "#f1f5f9"
 
 st.markdown(f"""
 <style>
@@ -61,7 +63,7 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* 1. TOP NAV & CARD TRIGGER BUTTONS */
+    /* 1. NAVIGATION BUTTONS */
     div[data-testid="stColumn"] button,
     div[data-testid="stPopover"] > button,
     div[data-testid="stBaseButton-secondary"] {{
@@ -90,7 +92,7 @@ st.markdown(f"""
         background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* 2. FIX POPOVER MENU CONTAINER & POPUP CONTENTS */
+    /* 2. POPOVER MENU CONTAINER & POPUP CONTENTS */
     div[data-testid="stPopoverBody"] {{
         background-color: {'#0f172a' if is_dark else '#ffffff'} !important;
         border: 1px solid {nav_btn_border} !important;
@@ -140,25 +142,37 @@ st.markdown(f"""
         font-size: 0.9rem !important;
     }}
 
-    /* Card Box Wrappers */
-    .dashboard-card-box {{
-        background: {card_bg};
-        border: 1px solid {card_border};
-        border-radius: 14px;
-        padding: 20px;
-        margin-bottom: 12px;
-        min-height: 140px;
+    /* 4. ENTIRE BOX AS A CLICKABLE BUTTON */
+    .element-container:has(button[key^="card_box_"]) button {{
+        background-color: {card_bg} !important;
+        border: 1px solid {card_border} !important;
+        border-radius: 14px !important;
+        padding: 24px !important;
+        height: auto !important;
+        min-height: 130px !important;
+        width: 100% !important;
+        text-align: left !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        white-space: normal !important;
     }}
-    .dashboard-card-title {{
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: {text_color};
-        margin-bottom: 6px;
+
+    .element-container:has(button[key^="card_box_"]) button:hover {{
+        border-color: {card_hover_border} !important;
+        background-color: {card_hover_bg} !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 20px -5px rgba(56, 189, 248, 0.15) !important;
     }}
-    .dashboard-card-desc {{
-        font-size: 0.9rem;
-        color: {subtext_color};
-        line-height: 1.4;
+
+    .element-container:has(button[key^="card_box_"]) button p {{
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        width: 100% !important;
     }}
 
     /* Typography & Stat Bar */
@@ -278,24 +292,20 @@ if st.session_state.active_page == "Home":
     # Grid Row 1
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("""
-        <div class="dashboard-card-box">
-            <div class="dashboard-card-title">🎯 Prelims PYQ Quiz</div>
-            <div class="dashboard-card-desc">Custom test builder filtering by subject, topic, and year range with instant automated scoring.</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Launch Prelims PYQ Engine ➔", key="card_btn_prelims", use_container_width=True, type="primary"):
+        if st.button(
+            "🎯 Prelims PYQ Quiz\n\nCustom test builder filtering by subject, topic, and year range with instant automated scoring.",
+            key="card_box_prelims",
+            use_container_width=True
+        ):
             navigate_to("Prelims PYQ Quiz")
             st.rerun()
 
     with col2:
-        st.markdown("""
-        <div class="dashboard-card-box">
-            <div class="dashboard-card-title">✍️ Mains PYQ Writing</div>
-            <div class="dashboard-card-desc">Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Launch Mains PYQ Engine ➔", key="card_btn_mains", use_container_width=True):
+        if st.button(
+            "✍️ Mains PYQ Writing\n\nSelect official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
+            key="card_box_mains",
+            use_container_width=True
+        ):
             navigate_to("Mains PYQ Practice")
             st.rerun()
 
@@ -304,24 +314,20 @@ if st.session_state.active_page == "Home":
     # Grid Row 2
     col3, col4 = st.columns(2)
     with col3:
-        st.markdown("""
-        <div class="dashboard-card-box">
-            <div class="dashboard-card-title">📊 CSAT Interactive Arena</div>
-            <div class="dashboard-card-desc">Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Launch CSAT Arena ➔", key="card_btn_csat", use_container_width=True):
+        if st.button(
+            "📊 CSAT Interactive Arena\n\nMaster Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
+            key="card_box_csat",
+            use_container_width=True
+        ):
             navigate_to("CSAT PYQ Quiz")
             st.rerun()
 
     with col4:
-        st.markdown("""
-        <div class="dashboard-card-box">
-            <div class="dashboard-card-title">⚡ Dynamic Quiz Generator</div>
-            <div class="dashboard-card-desc">Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Launch Quiz Generator ➔", key="card_btn_daily", use_container_width=True):
+        if st.button(
+            "⚡ Dynamic Quiz Generator\n\nGenerate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
+            key="card_box_daily",
+            use_container_width=True
+        ):
             navigate_to("Daily Quiz Generator")
             st.rerun()
 
@@ -330,13 +336,11 @@ if st.session_state.active_page == "Home":
     # Grid Row 3
     col5, _ = st.columns([1, 1])
     with col5:
-        st.markdown("""
-        <div class="dashboard-card-box">
-            <div class="dashboard-card-title">🔍 Universal Mains Evaluator</div>
-            <div class="dashboard-card-desc">Upload an answer sheet for ANY question—typed or handwritten—and receive structural feedback.</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Launch Universal Evaluator ➔", key="card_btn_univ", use_container_width=True):
+        if st.button(
+            "🔍 Universal Mains Evaluator\n\nUpload an answer sheet for ANY question—typed or handwritten—and receive structural feedback.",
+            key="card_box_univ",
+            use_container_width=True
+        ):
             navigate_to("Universal Mains Evaluator")
             st.rerun()
 
