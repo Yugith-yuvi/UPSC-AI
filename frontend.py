@@ -44,21 +44,6 @@ stat_border = "rgba(255, 255, 255, 0.08)" if is_dark else "#e2e8f0"
 
 st.markdown(f"""
 <style>
-/* Clickable card launch buttons */
-div[data-testid="stButton"]:has(button[key^="launch_"]) {
-    margin-top: -62px !important;
-    position: relative !important;
-    z-index: 10 !important;
-}
-
-div[data-testid="stButton"]:has(button[key^="launch_"]) button {
-    background: transparent !important;
-    border: none !important;
-    color: transparent !important;
-    height: 45px !important;
-    cursor: pointer !important;
-    box-shadow: none !important;
-}
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
     /* Global Base Theme */
