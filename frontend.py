@@ -388,13 +388,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
 
        # Extra height prevents the card from being cut off
        # Extra height prevents the card from being cut off
-    CARD_HEIGHT = 215
-
-    # Extra height prevents the card from being cut off
-    components.html(card_html, height=CARD_HEIGHT)
-
-    # REAL STREAMLIT BUTTON — stretched invisibly over the ENTIRE card so the whole box is clickable
-      # Extra height prevents the card from being cut off
+       # Render the visible card once
     components.html(card_html, height=215)
 
     # REAL STREAMLIT BUTTON — kept in the DOM but fully hidden; the visible card's
