@@ -445,7 +445,7 @@ if st.session_state.active_page == "Home":
             "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
             "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
             "#3b82f6",
-            "Mains PYQ Practice"
+            "Mains PYQ Practice",
             key="launch_mains"
         )
 
@@ -459,7 +459,7 @@ if st.session_state.active_page == "Home":
             "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
             "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
             "#a855f7",
-            "CSAT PYQ Quiz"
+            "CSAT PYQ Quiz",
             key="launch_csat"
         )
     with col4:
@@ -470,7 +470,7 @@ if st.session_state.active_page == "Home":
             "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
             "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
             "#f59e0b",
-            "Daily Quiz Generator"
+            "Daily Quiz Generator",
             key="launch_daily"
         )
 
@@ -484,7 +484,7 @@ if st.session_state.active_page == "Home":
             "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.",
             "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
             "#f43f5e",
-            "Universal Mains Evaluator"
+            "Universal Mains Evaluator",
             key="launch_universal"
         )
 
