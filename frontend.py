@@ -254,6 +254,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
                 flex-direction: column;
                 justify-content: space-between;
                 backdrop-filter: blur(12px);
+                cursor: pointer;
             }}
 
             .card::before {{
@@ -368,7 +369,18 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
                 <div class="launch-btn">
                     Launch Tool &rarr;
                 </div>
-            </div>
+                    </div>
+
+        <script>
+            document.querySelector('.card').addEventListener('click', function() {{
+                try {{
+                    const btn = window.parent.document.querySelector('.st-key-wrap_{key} button');
+                    if (btn) {{ btn.click(); }}
+                }} catch (e) {{
+                    console.error('Navigation failed:', e);
+                }}
+            }});
+        </script>
 
     </body>
     </html>
@@ -382,30 +394,21 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     components.html(card_html, height=CARD_HEIGHT)
 
     # REAL STREAMLIT BUTTON — stretched invisibly over the ENTIRE card so the whole box is clickable
+      # Extra height prevents the card from being cut off
+    components.html(card_html, height=215)
+
+    # REAL STREAMLIT BUTTON — kept in the DOM but fully hidden; the visible card's
+    # own onclick script (inside card_html above) finds and clicks this button.
     with st.container(key=f"wrap_{key}"):
         st.markdown(f"""
         <style>
         .st-key-wrap_{key} {{
-            margin-top: -{CARD_HEIGHT}px;
-            margin-bottom: 10px;
-        }}
-        .st-key-wrap_{key} button {{
-            width: 100% !important;
-            height: {CARD_HEIGHT}px !important;
-            background: transparent !important;
-            border: none !important;
-            color: transparent !important;
-            box-shadow: none !important;
-            cursor: pointer !important;
-        }}
-        .st-key-wrap_{key} button:focus {{
-            outline: none !important;
-            box-shadow: none !important;
+            display: none;
         }}
         </style>
         """, unsafe_allow_html=True)
 
-        if st.button("Launch Tool →", key=key, use_container_width=True):
+        if st.button("Launch Tool →", key=key):
             navigate_to(target_page)
             st.rerun()
 # --- PAGE 1: WELCOME DASHBOARD ---
