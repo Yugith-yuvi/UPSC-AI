@@ -376,7 +376,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
 
        # Extra height prevents the card from being cut off
        # Extra height prevents the card from being cut off
-       CARD_HEIGHT = 215
+    CARD_HEIGHT = 215
 
     # Extra height prevents the card from being cut off
     components.html(card_html, height=CARD_HEIGHT)
