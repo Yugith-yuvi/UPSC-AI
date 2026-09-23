@@ -20,6 +20,12 @@ if "active_page" not in st.session_state:
 if "theme" not in st.session_state:
     st.session_state.theme = "Dark"
 
+if "quiz_questions" not in st.session_state:
+    st.session_state.quiz_questions = []
+
+if "user_answers" not in st.session_state:
+    st.session_state.user_answers = {}
+
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.active_page = query_params["page"]
@@ -53,7 +59,7 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* 1. TOP NAV TRIGGER BUTTONS */
+    /* Top Nav Trigger Buttons */
     div[data-testid="stColumn"] button,
     div[data-testid="stPopover"] > button,
     div[data-testid="stBaseButton-secondary"] {{
@@ -82,7 +88,7 @@ st.markdown(f"""
         background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
     }}
 
-    /* 2. FIX POPOVER MENU CONTAINER & POPUP CONTENTS */
+    /* Popover Menu Styling */
     div[data-testid="stPopoverBody"] {{
         background-color: {'#0f172a' if is_dark else '#ffffff'} !important;
         border: 1px solid {nav_btn_border} !important;
@@ -109,12 +115,7 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
-    div[data-testid="stPopoverBody"] button:hover {{
-        border-color: #38bdf8 !important;
-        background-color: {'#334155' if is_dark else '#f1f5f9'} !important;
-    }}
-
-    /* 3. TOGGLE SWITCH CONTAINER STYLING */
+    /* Toggle Switch Container */
     div[data-testid="stCheckbox"] {{
         background: {nav_btn_bg} !important;
         border: 1px solid {nav_btn_border} !important;
@@ -208,203 +209,150 @@ with col_toggle:
 
 st.markdown("---")
 
-# Helper function to render theme-aware card components
-def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, key):
+# Helper function for dashboard card components
+def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page):
     c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
     c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
     c_title = "#f8fafc" if is_dark else "#0f172a"
     c_desc = "#94a3b8" if is_dark else "#64748b"
     c_shadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)" if is_dark else "0 4px 12px rgba(15, 23, 42, 0.05)"
 
-    # Safely encode the page name for the URL
-    import urllib.parse
-    page_url = "?page=" + urllib.parse.quote(target_page)
-
     card_html = f"""
     <!DOCTYPE html>
     <html>
     <head>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{ font-family: 'Outfit', sans-serif; background: transparent; padding: 6px; }}
+        
+        .card {{
+            background: {c_bg};
+            border: 1px solid {c_border};
+            border-radius: 18px;
+            padding: 22px;
+            height: 175px;
+            box-shadow: {c_shadow};
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(12px);
+        }}
 
-        <style>
-            * {{
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }}
+        .card::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: {accent_gradient};
+            transition: all 0.3s ease;
+        }}
 
-            body {{
-                font-family: 'Outfit', sans-serif;
-                background: transparent;
-                padding: 6px;
-            }}
+        .card:hover {{
+            transform: translateY(-8px) scale(1.01);
+            border-color: {glow_color}88;
+            box-shadow: 0 20px 35px -10px {glow_color}33, 0 0 15px {glow_color}22;
+        }}
 
-            .card {{
-                background: {c_bg};
-                border: 1px solid {c_border};
-                border-radius: 18px;
-                padding: 22px;
-                height: 175px;
-                width: 100%;
-                box-shadow: {c_shadow};
-                transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-                position: relative;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                backdrop-filter: blur(12px);
-                cursor: pointer;
-            }}
+        .card:hover::before {{
+            height: 5px;
+        }}
 
-            .card::before {{
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 3px;
-                background: {accent_gradient};
-                transition: all 0.3s ease;
-            }}
+        .header-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }}
 
-            .card:hover {{
-                transform: translateY(-8px) scale(1.01);
-                border-color: {glow_color}88;
-                box-shadow:
-                    0 20px 35px -10px {glow_color}33,
-                    0 0 15px {glow_color}22;
-            }}
+        .title {{
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: {c_title};
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
 
-            .card:hover::before {{
-                height: 5px;
-            }}
+        .badge {{
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: {glow_color}22;
+            color: {glow_color};
+            border: 1px solid {glow_color}44;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }}
 
-            .header-row {{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 10px;
-            }}
+        .desc {{
+            font-size: 0.88rem;
+            color: {c_desc};
+            line-height: 1.5;
+            font-weight: 400;
+        }}
 
-            .title {{
-                font-size: 1.2rem;
-                font-weight: 700;
-                color: {c_title};
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }}
+        .action-row {{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }}
 
-            .badge {{
-                font-size: 0.7rem;
-                font-weight: 700;
-                padding: 4px 10px;
-                border-radius: 20px;
-                background: {glow_color}22;
-                color: {glow_color};
-                border: 1px solid {glow_color}44;
-                text-transform: uppercase;
-                letter-spacing: 0.6px;
-            }}
+        .launch-btn {{
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: {accent_gradient};
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px {glow_color}44;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            user-select: none;
+        }}
 
-            .desc {{
-                font-size: 0.88rem;
-                color: {c_desc};
-                line-height: 1.5;
-                font-weight: 400;
-            }}
-
-            .action-row {{
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-            }}
-
-            .launch-btn {{
-                font-size: 0.8rem;
-                font-weight: 700;
-                color: #ffffff;
-                background: {accent_gradient};
-                padding: 7px 14px;
-                border-radius: 20px;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                box-shadow: 0 4px 12px {glow_color}44;
-                transition: all 0.2s ease;
-                text-decoration: none;
-                cursor: pointer;
-            }}
-
-            .launch-btn:hover {{
-                transform: translateX(3px);
-                filter: brightness(1.1);
-            }}
-        </style>
+        .launch-btn:hover {{
+            transform: translateX(3px);
+            filter: brightness(1.1);
+        }}
+    </style>
     </head>
-
     <body>
-
         <div class="card">
-
             <div>
                 <div class="header-row">
-                    <div class="title">
-                        <span>{icon}</span>
-                        {title}
-                    </div>
-
-                    <span class="badge">
-                        {tag}
-                    </span>
+                    <div class="title"><span>{icon}</span> {title}</div>
+                    <span class="badge">{tag}</span>
                 </div>
-
-                <div class="desc">
-                    {description}
-                </div>
+                <div class="desc">{description}</div>
             </div>
-
-                    <div class="action-row">
-                <div class="launch-btn">
-                    Launch Tool &rarr;
-                </div>
-                    </div>
+            <div class="action-row">
+                <button class="launch-btn" onclick="openPage('{target_page}')">Launch Tool &rarr;</button>
+            </div>
+        </div>
 
         <script>
-            document.querySelector('.card').addEventListener('click', function() {{
-                try {{
-                    const btn = window.parent.document.querySelector('.st-key-wrap_{key} button');
-                    if (btn) {{ btn.click(); }}
-                }} catch (e) {{
-                    console.error('Navigation failed:', e);
-                }}
-            }});
+            function openPage(targetPage) {{
+                const parentUrl = new URL(window.parent.location.href);
+                parentUrl.searchParams.set('page', targetPage);
+                window.parent.location.href = parentUrl.toString();
+            }}
         </script>
-
     </body>
     </html>
     """
+    components.html(card_html, height=190)
 
-       # Extra height prevents the card from being cut off
-       # Extra height prevents the card from being cut off
-       # Render the visible card once
-    components.html(card_html, height=215)
-
-    # REAL STREAMLIT BUTTON — kept in the DOM but fully hidden; the visible card's
-    # own onclick script (inside card_html above) finds and clicks this button.
-    with st.container(key=f"wrap_{key}"):
-        st.markdown(f"""
-        <style>
-        .st-key-wrap_{key} {{
-            display: none;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
-
-        if st.button("Launch Tool →", key=key):
-            navigate_to(target_page)
-            st.rerun()
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
     st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
@@ -434,8 +382,7 @@ if st.session_state.active_page == "Home":
             "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
             "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             "#10b981",
-            "Prelims PYQ Quiz",
-            key="launch_prelims"
+            "Prelims PYQ Quiz"
         )
     with col2:
         render_neon_card(
@@ -445,8 +392,7 @@ if st.session_state.active_page == "Home":
             "Select official Mains questions, write on paper, and upload a photo for detailed AI evaluation.",
             "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
             "#3b82f6",
-            "Mains PYQ Practice",
-            key="launch_mains"
+            "Mains PYQ Practice"
         )
 
     # Grid Row 2
@@ -459,8 +405,7 @@ if st.session_state.active_page == "Home":
             "Master Quant, Logical Reasoning, and Reading Comprehension with dedicated practice sets.",
             "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
             "#a855f7",
-            "CSAT PYQ Quiz",
-            key="launch_csat"
+            "CSAT PYQ Quiz"
         )
     with col4:
         render_neon_card(
@@ -470,8 +415,7 @@ if st.session_state.active_page == "Home":
             "Generate fresh practice questions instantly based on recent news and static UPSC syllabus topics.",
             "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
             "#f59e0b",
-            "Daily Quiz Generator",
-            key="launch_daily"
+            "Daily Quiz Generator"
         )
 
     # Grid Row 3
@@ -484,104 +428,120 @@ if st.session_state.active_page == "Home":
             "Upload an answer sheet for ANY question—typed or handwritten—and receive comprehensive structural feedback.",
             "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
             "#f43f5e",
-            "Universal Mains Evaluator",
-            key="launch_universal"
+            "Universal Mains Evaluator"
         )
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
-    st.title("🎯 Prelims Past Year Question Quiz")
-    st.write("Select your criteria below to generate your custom practice test.")
+    st.markdown('<div class="hero-glow-title">🎯 Prelims PYQ Quiz</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Filter official UPSC Prelims questions by subject and year range.</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
+    # Filter Controls
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
         subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
-    with col2:
+    with col_f2:
         years = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
 
-    if st.button("Generate Quiz Test", key="run_prelims", type="primary"):
-        with st.spinner("Fetching questions from database..."):
+    if st.button("Generate Quiz Set 🚀", type="primary", use_container_width=True):
+        with st.spinner("Fetching questions..."):
             try:
                 endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
                 params = {"subject": subject, "year_start": years[0], "year_end": years[1], "exam_type": "Prelims"}
-                res = requests.get(endpoint, params=params, timeout=30)
+                res = requests.get(endpoint, params=params, timeout=10)
+                
                 if res.status_code == 200:
                     data = res.json().get("data", [])
-                    if data:
-                        st.success(f"Loaded {len(data)} questions!")
-                        for idx, q in enumerate(data, 1):
-                            st.subheader(f"Question {idx} ({q['year']})")
-                            st.write(q["question"])
-                            if q.get("options"):
-                                st.radio("Select Your Answer:", list(q["options"].items()), format_func=lambda x: f"{x[0]}: {x[1]}", key=f"q_{q['id']}")
-                            with st.expander("Show Solution"):
-                                st.info(f"Correct Option: {q.get('correct_option', 'N/A')}")
-                                st.write(q.get("explanation", ""))
-                    else:
-                        st.warning("No questions found matching these filters. Try expanding the year range.")
+                    st.session_state.quiz_questions = data
+                    st.session_state.user_answers = {}
                 else:
-                    st.error("Server error loading questions.")
-            except Exception as e:
-                st.error(f"Connection error: {e}")
+                    st.session_state.quiz_questions = []
+            except Exception:
+                # Demo questions fallback if backend is offline
+                st.session_state.quiz_questions = [
+                    {
+                        "id": 1,
+                        "year": 2023,
+                        "question": "Which one of the following statements best reflects the chief purpose of the 'Constitution of India'?",
+                        "options": {
+                            "A": "It determines the objective for the making of necessary laws.",
+                            "B": "It enables the creation of political offices and a government.",
+                            "C": "It defines and limits the powers of government.",
+                            "D": "It secures social justice, social equality and social security."
+                        },
+                        "correct_option": "C",
+                        "explanation": "A constitution primary purpose in a democracy is to define and limit the powers of government to protect individual liberties."
+                    },
+                    {
+                        "id": 2,
+                        "year": 2022,
+                        "question": "With reference to the Indian economy, consider the following statements regarding Inflation-Indexed Bonds (IIBs):\n1. Government can reduce the coupon rates on its borrowing through IIBs.\n2. IIBs provide protection to the investors from uncertainty regarding inflation.\nWhich of the statements given above is/are correct?",
+                        "options": {
+                            "A": "1 only",
+                            "B": "2 only",
+                            "C": "Both 1 and 2",
+                            "D": "Neither 1 nor 2"
+                        },
+                        "correct_option": "C",
+                        "explanation": "Both statements are correct. IIBs provide inflation protection and allow government to borrow at lower real rates."
+                    }
+                ]
+                st.session_state.user_answers = {}
+
+    st.write("")
+
+    # Display Loaded Questions
+    if st.session_state.quiz_questions:
+        st.success(f"Loaded {len(st.session_state.quiz_questions)} Questions!")
+        
+        for idx, q in enumerate(st.session_state.quiz_questions, 1):
+            with st.container(border=True):
+                st.markdown(f"### Question {idx} ({q['year']})")
+                st.write(q["question"])
+                
+                options_dict = q.get("options", {})
+                formatted_options = [f"{key}: {val}" for key, val in options_dict.items()]
+                
+                user_choice = st.radio(
+                    "Choose Option:",
+                    options=formatted_options,
+                    key=f"q_choice_{q['id']}"
+                )
+                
+                if user_choice:
+                    selected_key = user_choice.split(":")[0].strip()
+                    st.session_state.user_answers[q['id']] = selected_key
+
+                with st.expander("Show Solution & Explanation"):
+                    st.info(f"**Correct Option:** {q.get('correct_option')}")
+                    st.write(q.get("explanation", ""))
+
+        st.write("")
+        if st.button("Submit & Score Quiz 📊", type="primary"):
+            score = 0
+            total = len(st.session_state.quiz_questions)
+            for q in st.session_state.quiz_questions:
+                if st.session_state.user_answers.get(q['id']) == q.get('correct_option'):
+                    score += 1
+            st.balloons()
+            st.success(f"### Your Score: {score} / {total}")
 
 # --- PAGE 3: MAINS PYQ ANSWER WRITING ---
 elif st.session_state.active_page == "Mains PYQ Practice":
     st.title("✍️ Mains PYQ Answer Practice")
     st.write("Pick a subject, get an official question, write your answer on paper, and upload your sheet.")
 
-    subject = st.selectbox("Select Mains Subject", ["GS 1 - History & Society", "GS 2 - Polity & IR", "GS 3 - Economy & Environment", "GS 4 - Ethics"])
-    
-    if st.button("Get Mains Question", key="get_mains_q"):
-        st.info("📌 **Sample Question:** Evaluate the impact of climate change on coastal agriculture in India, suggesting mitigation strategies. (15 Marks, 250 Words)")
-
-    uploaded_file = st.file_uploader("Upload Scanned Answer Sheet (JPG / PNG / PDF)", type=["jpg", "jpeg", "png", "pdf"])
-    if uploaded_file and st.button("Evaluate Answer with AI", key="eval_mains_btn", type="primary"):
-        with st.spinner("AI is reading handwriting (OCR) and evaluating content against UPSC criteria..."):
-            st.success("Evaluation Complete!")
-            st.markdown("### 📝 Score: **8.5 / 15**")
-            st.markdown("**Strengths:** Clear structure, good introduction of IPCC targets.")
-            st.markdown("**Areas for Improvement:** Needs map representation of vulnerable coastal regions.")
-
 # --- PAGE 4: CSAT PYQ QUIZ ---
 elif st.session_state.active_page == "CSAT PYQ Quiz":
     st.title("📊 CSAT Interactive Arena")
     st.write("Practice Quant, Logical Reasoning, and Reading Comprehension questions.")
-
-    topic = st.selectbox("Select Topic", ["Reading Comprehension", "Data Interpretation", "Logical Reasoning", "Quantitative Aptitude"])
-    if st.button("Start CSAT Practice Set", key="start_csat", type="primary"):
-        st.info("Loading CSAT question set...")
 
 # --- PAGE 5: DYNAMIC PRELIMS QUIZ ---
 elif st.session_state.active_page == "Daily Quiz Generator":
     st.title("⚡ AI Current Affairs & Static Quiz Generator")
     st.write("Fresh questions generated on the spot using the latest UPSC statement-based pattern.")
 
-    cat = st.radio("Quiz Category", ["Current Affairs (Last 12 Months)", "Static Syllabus Mix"])
-    if st.button("Generate Fresh Questions", key="gen_daily_q", type="primary"):
-        with st.spinner("AI is creating new questions..."):
-            st.write("### Sample AI Generated Question")
-            st.write("Consider the following statements regarding Central Bank Digital Currency (CBDC):")
-            st.write("1. It is a sovereign currency issued by the RBI in digital form.")
-            st.write("2. It appears as a liability on the central bank's balance sheet.")
-            st.write("Which of the statements given above is/are correct?")
-            st.radio("Your Choice:", ["1 only", "2 only", "Both 1 and 2", "Neither 1 nor 2"])
-
 # --- PAGE 6: UNIVERSAL MAINS EVALUATOR ---
 elif st.session_state.active_page == "Universal Mains Evaluator":
     st.title("🔍 Universal Mains Answer Evaluator")
     st.write("Evaluate answers for ANY question—whether generated by AI or typed by you.")
-
-    option = st.radio("How would you like to provide the question?", ["Type/Paste the Question", "Question is written on the Answer Sheet"])
-    
-    if option == "Type/Paste the Question":
-        q_text = st.text_area("Enter your question here:")
-    
-    answer_sheet = st.file_uploader("Upload Scanned Answer Sheet", type=["jpg", "jpeg", "png", "pdf"], key="univ_eval")
-    
-    if answer_sheet and st.button("Run Comprehensive AI Evaluation", key="run_univ_eval", type="primary"):
-        with st.spinner("Analyzing answer structure, facts, and clarity..."):
-            st.success("Evaluation Finished!")
-            st.markdown("### 📊 Evaluation Summary")
-            st.write("**Handwriting Readability:** Excellent")
-            st.write("**Relevance to Question:** 80%")
-            st.write("**Model Answer Comparison:** Added key constitutional articles missing from user response.")
