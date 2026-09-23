@@ -371,32 +371,34 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     """
 
        # Extra height prevents the card from being cut off
+       # Extra height prevents the card from being cut off
     components.html(card_html, height=215)
 
-       # REAL STREAMLIT BUTTON — sits directly under the card, styled to match its accent color
-    st.markdown(f"""
-    <style>
-    div[data-testid="stButton"][data-key="{key}"] {{
-        margin-top: -20px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: flex-end;
-    }}
-    div[data-testid="stButton"][data-key="{key}"] button {{
-        background: {accent_gradient} !important;
-        border: none !important;
-        border-radius: 20px !important;
-        color: white !important;
-        font-weight: 700 !important;
-        padding: 4px 18px !important;
-        box-shadow: 0 4px 12px {glow_color}44 !important;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
+    # REAL STREAMLIT BUTTON — wrapped in a keyed container so CSS can reliably target it
+    with st.container(key=f"wrap_{key}"):
+        st.markdown(f"""
+        <style>
+        .st-key-wrap_{key} {{
+            margin-top: -20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }}
+        .st-key-wrap_{key} button {{
+            background: {accent_gradient} !important;
+            border: none !important;
+            border-radius: 20px !important;
+            color: white !important;
+            font-weight: 700 !important;
+            padding: 4px 18px !important;
+            box-shadow: 0 4px 12px {glow_color}44 !important;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
 
-    if st.button("Launch Tool →", key=key):
-        navigate_to(target_page)
-        st.rerun()
+        if st.button("Launch Tool →", key=key):
+            navigate_to(target_page)
+            st.rerun()
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
     st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
