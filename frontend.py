@@ -489,12 +489,11 @@ if st.session_state.active_page == "Home":
         )
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
-# --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
-    # Custom CSS Overrides for Dark/Light Mode Widget Visibility
+    # Dark/Light Mode explicit styling fix for Streamlit form elements
     st.markdown(f"""
     <style>
-        /* 1. Label and Form Control Colors */
+        /* Labels & Headings Color Override */
         div[data-testid="stSelectbox"] label,
         div[data-testid="stSlider"] label,
         div[data-testid="stWidgetLabel"] label p,
@@ -503,45 +502,47 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
             font-weight: 500 !important;
         }}
 
-        /* 2. Selectbox Styling */
+        /* Dropdown Input Styling */
         div[data-baseweb="select"] > div {{
             background-color: {'#1e293b' if is_dark else '#ffffff'} !important;
             color: {text_color} !important;
-            border-color: {nav_btn_border} !important;
+            border: 1px solid {nav_btn_border} !important;
             border-radius: 8px !important;
         }}
         div[data-baseweb="select"] span {{
             color: {text_color} !important;
         }}
 
-        /* 3. Radio Buttons & Option Labels */
+        /* Radio Options Text Visibility */
         div[data-testid="stRadio"] label p {{
-            color: {'#e2e8f0' if is_dark else '#1e293b'} !important;
-            font-size: 0.95rem !important;
+            color: {'#f1f5f9' if is_dark else '#0f172a'} !important;
+            font-size: 0.98rem !important;
+            font-weight: 400 !important;
         }}
         div[data-testid="stRadio"] label:hover p {{
             color: #38bdf8 !important;
         }}
 
-        /* 4. Expander Header & Text Fix */
+        /* Solution Expander Box Styling */
         div[data-testid="stExpander"] {{
             background-color: {'#1e293b' if is_dark else '#f8fafc'} !important;
             border: 1px solid {nav_btn_border} !important;
             border-radius: 8px !important;
+            margin-top: 10px;
         }}
         div[data-testid="stExpander"] details summary span p {{
-            color: {'#f8fafc' if is_dark else '#0f172a'} !important;
+            color: {'#38bdf8' if is_dark else '#0284c7'} !important;
             font-weight: 600 !important;
         }}
 
-        /* 5. Custom Container Styling */
-        .quiz-card {{
+        /* Custom Card Container */
+        .quiz-card-box {{
             background-color: {'#0f172a' if is_dark else '#ffffff'};
             border: 1px solid {'#334155' if is_dark else '#e2e8f0'};
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: {'0 4px 6px -1px rgba(0,0,0,0.3)' if is_dark else '0 2px 4px rgba(0,0,0,0.05)'};
+            box-shadow: {'0 4px 6px -1px rgba(0,0,0,0.4)' if is_dark else '0 2px 4px rgba(0,0,0,0.05)'};
         }}
     </style>
     """, unsafe_allow_html=True)
@@ -549,7 +550,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     st.markdown('<div class="hero-glow-title">🎯 Prelims PYQ Quiz</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Practice official UPSC Prelims questions filtered by subject and year range.</div>', unsafe_allow_html=True)
 
-    # State initialization for the quiz
+    # State initialization
     if "prelims_questions" not in st.session_state:
         st.session_state.prelims_questions = []
     if "user_answers" not in st.session_state:
@@ -557,68 +558,68 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
     if "quiz_submitted" not in st.session_state:
         st.session_state.quiz_submitted = False
 
-    # Filter Controls Box
-    with st.container():
-        st.markdown('<div class="quiz-card">', unsafe_allow_html=True)
-        col_f1, col_f2 = st.columns(2)
-        with col_f1:
-            subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
-        with col_f2:
-            years = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
+    # Filter Box
+    st.markdown('<div class="quiz-card-box">', unsafe_allow_html=True)
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
+    with col_f2:
+        years = st.slider("Select Year Range", 2000, 2026, (2015, 2026))
 
-        if st.button("Generate Quiz Test 🚀", type="primary", use_container_width=True, key="btn_gen_prelims"):
-            st.session_state.user_answers = {}
-            st.session_state.quiz_submitted = False
-            
-            with st.spinner("Fetching questions from database..."):
-                try:
-                    endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
-                    params = {"subject": subject, "year_start": years[0], "year_end": years[1], "exam_type": "Prelims"}
-                    res = requests.get(endpoint, params=params, timeout=10)
-                    
-                    if res.status_code == 200 and res.json().get("data"):
-                        st.session_state.prelims_questions = res.json().get("data", [])
-                    else:
-                        raise ValueError("No data returned from backend.")
-                except Exception:
-                    st.session_state.prelims_questions = [
-                        {
-                            "id": 101,
-                            "year": 2023,
-                            "question": "Which one of the following statements best reflects the chief purpose of the 'Constitution of India'?",
-                            "options": {
-                                "A": "It determines the objective for the making of necessary laws.",
-                                "B": "It enables the creation of political offices and a government.",
-                                "C": "It defines and limits the powers of government.",
-                                "D": "It secures social justice, social equality and social security."
-                            },
-                            "correct_option": "C",
-                            "explanation": "The primary purpose of a constitution in a constitutional democracy is to define and limit the powers of the government to protect fundamental rights."
+    if st.button("Generate Quiz Test 🚀", type="primary", use_container_width=True, key="btn_gen_prelims"):
+        st.session_state.user_answers = {}
+        st.session_state.quiz_submitted = False
+        
+        with st.spinner("Fetching questions..."):
+            try:
+                endpoint = f"{BACKEND_URL}/api/v1/pyq/fetch"
+                params = {"subject": subject, "year_start": years[0], "year_end": years[1], "exam_type": "Prelims"}
+                res = requests.get(endpoint, params=params, timeout=10)
+                
+                if res.status_code == 200 and res.json().get("data"):
+                    st.session_state.prelims_questions = res.json().get("data", [])
+                else:
+                    raise ValueError("Backend unavailable.")
+            except Exception:
+                # Mock Questions for fallback
+                st.session_state.prelims_questions = [
+                    {
+                        "id": 101,
+                        "year": 2023,
+                        "question": "Which one of the following statements best reflects the chief purpose of the 'Constitution of India'?",
+                        "options": {
+                            "A": "It determines the objective for the making of necessary laws.",
+                            "B": "It enables the creation of political offices and a government.",
+                            "C": "It defines and limits the powers of government.",
+                            "D": "It secures social justice, social equality and social security."
                         },
-                        {
-                            "id": 102,
-                            "year": 2022,
-                            "question": "With reference to the Indian economy, consider the following statements regarding Inflation-Indexed Bonds (IIBs):\n1. Government can reduce the coupon rates on its borrowing through IIBs.\n2. IIBs provide protection to the investors from uncertainty regarding inflation.\n\nWhich of the statements given above is/are correct?",
-                            "options": {
-                                "A": "1 only",
-                                "B": "2 only",
-                                "C": "Both 1 and 2",
-                                "D": "Neither 1 nor 2"
-                            },
-                            "correct_option": "C",
-                            "explanation": "Both statements are correct. Inflation-Indexed Bonds protect capital from inflation and allow sovereign issuers to borrow at lower real coupon rates."
-                        }
-                    ]
-        st.markdown('</div>', unsafe_allow_html=True)
+                        "correct_option": "C",
+                        "explanation": "The primary purpose of a constitution in a constitutional democracy is to define and limit the powers of the government to protect fundamental rights."
+                    },
+                    {
+                        "id": 102,
+                        "year": 2022,
+                        "question": "With reference to the Indian economy, consider the following statements regarding Inflation-Indexed Bonds (IIBs):\n1. Government can reduce the coupon rates on its borrowing through IIBs.\n2. IIBs provide protection to the investors from uncertainty regarding inflation.\n\nWhich of the statements given above is/are correct?",
+                        "options": {
+                            "A": "1 only",
+                            "B": "2 only",
+                            "C": "Both 1 and 2",
+                            "D": "Neither 1 nor 2"
+                        },
+                        "correct_option": "C",
+                        "explanation": "Both statements are correct. Inflation-Indexed Bonds protect capital from inflation and allow sovereign issuers to borrow at lower real coupon rates."
+                    }
+                ]
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Display Questions
+    # Question Cards List
     if st.session_state.prelims_questions:
         st.info(f"📋 **{len(st.session_state.prelims_questions)} Questions Loaded** for {subject} ({years[0]}–{years[1]})")
         
         for idx, q in enumerate(st.session_state.prelims_questions, 1):
-            st.markdown('<div class="quiz-card">', unsafe_allow_html=True)
+            st.markdown('<div class="quiz-card-box">', unsafe_allow_html=True)
             st.markdown(f"#### **Question {idx}** <span style='font-size:0.85rem; color:#38bdf8; float:right; font-weight:700;'>UPSC {q['year']}</span>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-size: 1.05rem; font-weight: 600; margin-bottom: 12px;'>{q['question']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 1.05rem; font-weight: 600; margin-bottom: 15px;'>{q['question']}</p>", unsafe_allow_html=True)
             
             options_dict = q.get("options", {})
             options_list = [f"{key}: {val}" for key, val in options_dict.items()]
@@ -642,14 +643,13 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                 opt_letter = selected_opt.split(":")[0].strip()
                 st.session_state.user_answers[q['id']] = opt_letter
 
-            st.write("")
             with st.expander("💡 View Explanation & Solution"):
                 st.markdown(f"**Correct Answer:** Option <span style='color: #10b981; font-weight: 700;'>{q.get('correct_option', 'N/A')}</span>", unsafe_allow_html=True)
                 st.write(q.get("explanation", "No detailed explanation available."))
             
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Submit & Score Controls
+        # Submit & Score Display
         col_s1, col_s2 = st.columns([2, 1])
         with col_s1:
             if st.button("Submit & Calculate Score 📊", type="primary", use_container_width=True, key="btn_score_prelims"):
@@ -669,7 +669,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
             st.markdown(f"""
             <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 18px; border-radius: 12px; text-align: center; margin-top: 15px;">
                 <h2 style="color: #10b981; margin: 0;">🎯 Quiz Completed!</h2>
-                <h3 style="margin: 8px 0 0 0; color: #f8fafc;">Score: {score} / {total} ({percentage}%)</h3>
+                <h3 style="margin: 8px 0 0 0; color: {'#f8fafc' if is_dark else '#0f172a'};">Score: {score} / {total} ({percentage}%)</h3>
             </div>
             """, unsafe_allow_html=True)
 
