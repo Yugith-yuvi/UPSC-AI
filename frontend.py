@@ -364,7 +364,11 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
                 </div>
             </div>
 
-                                   <div class="action-row"></div>
+                    <div class="action-row">
+                <div class="launch-btn">
+                    Launch Tool &rarr;
+                </div>
+            </div>
 
     </body>
     </html>
@@ -372,31 +376,36 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
 
        # Extra height prevents the card from being cut off
        # Extra height prevents the card from being cut off
-    components.html(card_html, height=215)
+       CARD_HEIGHT = 215
 
-    # REAL STREAMLIT BUTTON — wrapped in a keyed container so CSS can reliably target it
+    # Extra height prevents the card from being cut off
+    components.html(card_html, height=CARD_HEIGHT)
+
+    # REAL STREAMLIT BUTTON — stretched invisibly over the ENTIRE card so the whole box is clickable
     with st.container(key=f"wrap_{key}"):
         st.markdown(f"""
         <style>
         .st-key-wrap_{key} {{
-            margin-top: -20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: flex-end;
+            margin-top: -{CARD_HEIGHT}px;
+            margin-bottom: 10px;
         }}
         .st-key-wrap_{key} button {{
-            background: {accent_gradient} !important;
+            width: 100% !important;
+            height: {CARD_HEIGHT}px !important;
+            background: transparent !important;
             border: none !important;
-            border-radius: 20px !important;
-            color: white !important;
-            font-weight: 700 !important;
-            padding: 4px 18px !important;
-            box-shadow: 0 4px 12px {glow_color}44 !important;
+            color: transparent !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
+        }}
+        .st-key-wrap_{key} button:focus {{
+            outline: none !important;
+            box-shadow: none !important;
         }}
         </style>
         """, unsafe_allow_html=True)
 
-        if st.button("Launch Tool →", key=key):
+        if st.button("Launch Tool →", key=key, use_container_width=True):
             navigate_to(target_page)
             st.rerun()
 # --- PAGE 1: WELCOME DASHBOARD ---
