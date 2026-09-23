@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: upsc-pyq-api
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn upsc_backend:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /docs
+    autoDeploy: true
+    disk:
+      name: upsc-pyq-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////var/data/upsc_prep.db
+
+  - type: web
+    name: upsc-pyq-app
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run upsc_app.py --server.address 0.0.0.0 --server.port $PORT
+    autoDeploy: true
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: upsc-pyq-api
+          property: host
