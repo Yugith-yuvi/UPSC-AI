@@ -434,7 +434,7 @@ if st.session_state.active_page == "Home":
             "Custom test builder filtering by subject, topic, and year range with instant automated scoring.",
             "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             "#10b981",
-            "Prelims PYQ Quiz"
+            "Prelims PYQ Quiz",
             key="launch_prelims"
         )
     with col2:
