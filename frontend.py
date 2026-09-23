@@ -364,12 +364,7 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
                 </div>
             </div>
 
-                       <div class="action-row">
-                <div class="launch-btn">
-                    Launch Tool &rarr;
-                </div>
-            </div>
-        </div>
+                                   <div class="action-row"></div>
 
     </body>
     </html>
@@ -378,18 +373,16 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
        # Extra height prevents the card from being cut off
     components.html(card_html, height=215)
 
-    # REAL STREAMLIT BUTTON — pulled up into the card's bottom-right corner via CSS
+       # REAL STREAMLIT BUTTON — sits directly under the card, styled to match its accent color
     st.markdown(f"""
     <style>
     div[data-testid="stButton"][data-key="{key}"] {{
-        margin-top: -48px;
-        margin-bottom: 30px;
+        margin-top: -20px;
+        margin-bottom: 20px;
         display: flex;
         justify-content: flex-end;
-        pointer-events: none;
     }}
     div[data-testid="stButton"][data-key="{key}"] button {{
-        pointer-events: auto;
         background: {accent_gradient} !important;
         border: none !important;
         border-radius: 20px !important;
@@ -404,7 +397,6 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
     if st.button("Launch Tool →", key=key):
         navigate_to(target_page)
         st.rerun()
-
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
     st.markdown('<div class="hero-glow-title">⚡ UPSC AI Quest Hub</div>', unsafe_allow_html=True)
