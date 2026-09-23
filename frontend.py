@@ -209,7 +209,7 @@ with col_toggle:
 st.markdown("---")
 
 # Helper function to render theme-aware card components
-def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page):
+def render_neon_card(icon, title, tag, description, accent_gradient, glow_color, target_page, key):
     c_bg = "linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)" if is_dark else "#ffffff"
     c_border = "rgba(255, 255, 255, 0.1)" if is_dark else "#e2e8f0"
     c_title = "#f8fafc" if is_dark else "#0f172a"
@@ -364,26 +364,46 @@ def render_neon_card(icon, title, tag, description, accent_gradient, glow_color,
                 </div>
             </div>
 
-            <div class="action-row">
-                <a
-                    class="launch-btn"
-                    href="{page_url}"
-                    target="_top"
-                >
+                       <div class="action-row">
+                <div class="launch-btn">
                     Launch Tool &rarr;
-                </a>
+                </div>
             </div>
-
         </div>
 
     </body>
     </html>
     """
 
-    # Extra height prevents the card from being cut off
+       # Extra height prevents the card from being cut off
     components.html(card_html, height=215)
 
-    # REAL STREAMLIT BUTTON
+    # REAL STREAMLIT BUTTON — pulled up into the card's bottom-right corner via CSS
+    st.markdown(f"""
+    <style>
+    div[data-testid="stButton"][data-key="{key}"] {{
+        margin-top: -48px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: flex-end;
+        pointer-events: none;
+    }}
+    div[data-testid="stButton"][data-key="{key}"] button {{
+        pointer-events: auto;
+        background: {accent_gradient} !important;
+        border: none !important;
+        border-radius: 20px !important;
+        color: white !important;
+        font-weight: 700 !important;
+        padding: 4px 18px !important;
+        box-shadow: 0 4px 12px {glow_color}44 !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    if st.button("Launch Tool →", key=key):
+        navigate_to(target_page)
+        st.rerun()
 
 # --- PAGE 1: WELCOME DASHBOARD ---
 if st.session_state.active_page == "Home":
@@ -415,6 +435,7 @@ if st.session_state.active_page == "Home":
             "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             "#10b981",
             "Prelims PYQ Quiz"
+            key="launch_prelims"
         )
     with col2:
         render_neon_card(
@@ -425,6 +446,7 @@ if st.session_state.active_page == "Home":
             "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
             "#3b82f6",
             "Mains PYQ Practice"
+            key="launch_mains"
         )
 
     # Grid Row 2
@@ -438,6 +460,7 @@ if st.session_state.active_page == "Home":
             "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)",
             "#a855f7",
             "CSAT PYQ Quiz"
+            key="launch_csat"
         )
     with col4:
         render_neon_card(
@@ -448,6 +471,7 @@ if st.session_state.active_page == "Home":
             "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
             "#f59e0b",
             "Daily Quiz Generator"
+            key="launch_daily"
         )
 
     # Grid Row 3
@@ -461,6 +485,7 @@ if st.session_state.active_page == "Home":
             "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
             "#f43f5e",
             "Universal Mains Evaluator"
+            key="launch_universal"
         )
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
