@@ -490,7 +490,7 @@ if st.session_state.active_page == "Home":
 
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
-    # Dark/Light Mode explicit styling fix for Streamlit form elements
+    # Custom CSS for UI consistency and visibility in Dark & Light modes
     st.markdown(f"""
     <style>
         /* Labels & Headings Color Override */
@@ -523,16 +523,13 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
             color: #38bdf8 !important;
         }}
 
-        /* Solution Expander Box Styling */
-        div[data-testid="stExpander"] {{
-            background-color: {'#1e293b' if is_dark else '#f8fafc'} !important;
-            border: 1px solid {nav_btn_border} !important;
-            border-radius: 8px !important;
-            margin-top: 10px;
-        }}
-        div[data-testid="stExpander"] details summary span p {{
-            color: {'#38bdf8' if is_dark else '#0284c7'} !important;
-            font-weight: 600 !important;
+        /* Solution Box Styling (Visible after submission) */
+        .solution-box {{
+            background-color: {'#1e293b' if is_dark else '#f8fafc'};
+            border-left: 4px solid #10b981;
+            padding: 14px 18px;
+            border-radius: 6px;
+            margin-top: 14px;
         }}
 
         /* Custom Card Container */
@@ -581,7 +578,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                 else:
                     raise ValueError("Backend unavailable.")
             except Exception:
-                # Mock Questions for fallback
+                # Authentic UPSC PYQ Database (Fallback)
                 st.session_state.prelims_questions = [
                     {
                         "id": 101,
@@ -594,7 +591,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                             "D": "It secures social justice, social equality and social security."
                         },
                         "correct_option": "C",
-                        "explanation": "The primary purpose of a constitution in a constitutional democracy is to define and limit the powers of the government to protect fundamental rights."
+                        "explanation": "The primary purpose of a constitution in a constitutional democracy is to define and limit the powers of the government to protect fundamental rights and prevent arbitrary rule."
                     },
                     {
                         "id": 102,
@@ -608,6 +605,32 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                         },
                         "correct_option": "C",
                         "explanation": "Both statements are correct. Inflation-Indexed Bonds protect capital from inflation and allow sovereign issuers to borrow at lower real coupon rates."
+                    },
+                    {
+                        "id": 103,
+                        "year": 2021,
+                        "question": "With reference to the History of India, 'Ulgulan' or the Great Tumult is the description of which of the following events?",
+                        "options": {
+                            "A": "The Revolt of 1857",
+                            "B": "The Mappila Rebellion of 1921",
+                            "C": "The Indigo Revolt of 1859-60",
+                            "D": "Birsa Munda's Revolt of 1899-1900"
+                        },
+                        "correct_option": "D",
+                        "explanation": "The Ulgulan (Great Tumult) was led by Birsa Munda in the region south of Ranchi in 1899-1900 against British land policies and feudal oppression."
+                    },
+                    {
+                        "id": 104,
+                        "year": 2020,
+                        "question": "Which of the following statements is/are correct regarding the Smart Cities Mission?\n1. It is a Centrally Sponsored Scheme.\n2. One of its objectives is to promote cities that provide core infrastructure and give a decent quality of life.\n\nSelect the correct answer using the code given below:",
+                        "options": {
+                            "A": "1 only",
+                            "B": "2 only",
+                            "C": "Both 1 and 2",
+                            "D": "Neither 1 nor 2"
+                        },
+                        "correct_option": "C",
+                        "explanation": "Smart Cities Mission is a Centrally Sponsored Scheme launched by the Ministry of Housing and Urban Affairs to drive economic growth and improve quality of life."
                     }
                 ]
     st.markdown('</div>', unsafe_allow_html=True)
@@ -632,30 +655,54 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                         default_index = i
                         break
 
+            # Radio option selection (disabled after quiz submission)
             selected_opt = st.radio(
                 "Select Option:",
                 options=options_list,
                 index=default_index,
-                key=f"q_radio_{q['id']}"
+                key=f"q_radio_{q['id']}",
+                disabled=st.session_state.quiz_submitted
             )
             
-            if selected_opt:
+            if selected_opt and not st.session_state.quiz_submitted:
                 opt_letter = selected_opt.split(":")[0].strip()
                 st.session_state.user_answers[q['id']] = opt_letter
 
-            with st.expander("💡 View Explanation & Solution"):
-                st.markdown(f"**Correct Answer:** Option <span style='color: #10b981; font-weight: 700;'>{q.get('correct_option', 'N/A')}</span>", unsafe_allow_html=True)
-                st.write(q.get("explanation", "No detailed explanation available."))
-            
+            # SHOW SOLUTIONS ONLY AFTER SUBMISSION
+            if st.session_state.quiz_submitted:
+                user_ans = st.session_state.user_answers.get(q['id'], "Not Answered")
+                correct_ans = q.get("correct_option", "N/A")
+                is_correct = (user_ans == correct_ans)
+
+                status_badge = "<span style='color: #10b981; font-weight: 700;'>Correct Choice ✅</span>" if is_correct else f"<span style='color: #ef4444; font-weight: 700;'>Incorrect Choice ❌ (Your choice: {user_ans})</span>"
+
+                st.markdown(f"""
+                <div class="solution-box">
+                    <p style="margin: 0 0 6px 0; font-size: 0.95rem;"><b>Status:</b> {status_badge}</p>
+                    <p style="margin: 0 0 6px 0; font-size: 0.95rem;"><b>Correct Answer:</b> Option <span style="color: #10b981; font-weight: 700;">{correct_ans}</span></p>
+                    <p style="margin: 0; font-size: 0.9rem; color: {'#cbd5e1' if is_dark else '#475569'};"><b>Explanation:</b> {q.get('explanation', 'No detailed explanation provided.')}</p>
+                </div>
+                """, unsafe_allow_html=True)
+
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Submit & Score Display
-        col_s1, col_s2 = st.columns([2, 1])
+        # Action Buttons (Submit & Retake)
+        col_s1, col_s2 = st.columns(2)
+        
         with col_s1:
-            if st.button("Submit & Calculate Score 📊", type="primary", use_container_width=True, key="btn_score_prelims"):
-                st.session_state.quiz_submitted = True
-                st.rerun()
+            if not st.session_state.quiz_submitted:
+                if st.button("Submit & Calculate Score 📊", type="primary", use_container_width=True, key="btn_score_prelims"):
+                    st.session_state.quiz_submitted = True
+                    st.rerun()
 
+        with col_s2:
+            if st.session_state.quiz_submitted:
+                if st.button("🔄 Retake Quiz", type="secondary", use_container_width=True, key="btn_retake_prelims"):
+                    st.session_state.user_answers = {}
+                    st.session_state.quiz_submitted = False
+                    st.rerun()
+
+        # Score Summary Box
         if st.session_state.quiz_submitted:
             score = 0
             total = len(st.session_state.prelims_questions)
@@ -663,11 +710,10 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                 if st.session_state.user_answers.get(q['id']) == q.get('correct_option'):
                     score += 1
 
-            st.balloons()
             percentage = round((score / total) * 100, 1) if total > 0 else 0
             
             st.markdown(f"""
-            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 18px; border-radius: 12px; text-align: center; margin-top: 15px;">
+            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 20px; border-radius: 12px; text-align: center; margin-top: 10px;">
                 <h2 style="color: #10b981; margin: 0;">🎯 Quiz Completed!</h2>
                 <h3 style="margin: 8px 0 0 0; color: {'#f8fafc' if is_dark else '#0f172a'};">Score: {score} / {total} ({percentage}%)</h3>
             </div>
