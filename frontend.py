@@ -491,6 +491,61 @@ if st.session_state.active_page == "Home":
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 # --- PAGE 2: PRELIMS PYQ QUIZ ---
 elif st.session_state.active_page == "Prelims PYQ Quiz":
+    # Custom CSS Overrides for Dark/Light Mode Widget Visibility
+    st.markdown(f"""
+    <style>
+        /* 1. Label and Form Control Colors */
+        div[data-testid="stSelectbox"] label,
+        div[data-testid="stSlider"] label,
+        div[data-testid="stWidgetLabel"] label p,
+        div[data-testid="stMarkdownContainer"] p {{
+            color: {text_color} !important;
+            font-weight: 500 !important;
+        }}
+
+        /* 2. Selectbox Styling */
+        div[data-baseweb="select"] > div {{
+            background-color: {'#1e293b' if is_dark else '#ffffff'} !important;
+            color: {text_color} !important;
+            border-color: {nav_btn_border} !important;
+            border-radius: 8px !important;
+        }}
+        div[data-baseweb="select"] span {{
+            color: {text_color} !important;
+        }}
+
+        /* 3. Radio Buttons & Option Labels */
+        div[data-testid="stRadio"] label p {{
+            color: {'#e2e8f0' if is_dark else '#1e293b'} !important;
+            font-size: 0.95rem !important;
+        }}
+        div[data-testid="stRadio"] label:hover p {{
+            color: #38bdf8 !important;
+        }}
+
+        /* 4. Expander Header & Text Fix */
+        div[data-testid="stExpander"] {{
+            background-color: {'#1e293b' if is_dark else '#f8fafc'} !important;
+            border: 1px solid {nav_btn_border} !important;
+            border-radius: 8px !important;
+        }}
+        div[data-testid="stExpander"] details summary span p {{
+            color: {'#f8fafc' if is_dark else '#0f172a'} !important;
+            font-weight: 600 !important;
+        }}
+
+        /* 5. Custom Container Styling */
+        .quiz-card {{
+            background-color: {'#0f172a' if is_dark else '#ffffff'};
+            border: 1px solid {'#334155' if is_dark else '#e2e8f0'};
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: {'0 4px 6px -1px rgba(0,0,0,0.3)' if is_dark else '0 2px 4px rgba(0,0,0,0.05)'};
+        }}
+    </style>
+    """, unsafe_allow_html=True)
+
     st.markdown('<div class="hero-glow-title">🎯 Prelims PYQ Quiz</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Practice official UPSC Prelims questions filtered by subject and year range.</div>', unsafe_allow_html=True)
 
@@ -503,7 +558,8 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
         st.session_state.quiz_submitted = False
 
     # Filter Controls Box
-    with st.container(border=True):
+    with st.container():
+        st.markdown('<div class="quiz-card">', unsafe_allow_html=True)
         col_f1, col_f2 = st.columns(2)
         with col_f1:
             subject = st.selectbox("Select Subject", ["Polity & Governance", "Economy", "Modern History", "Environment & Ecology", "Science & Technology", "Geography"])
@@ -525,7 +581,6 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                     else:
                         raise ValueError("No data returned from backend.")
                 except Exception:
-                    # Fallback UPSC Questions if backend is unreachable
                     st.session_state.prelims_questions = [
                         {
                             "id": 101,
@@ -554,47 +609,45 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
                             "explanation": "Both statements are correct. Inflation-Indexed Bonds protect capital from inflation and allow sovereign issuers to borrow at lower real coupon rates."
                         }
                     ]
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.write("")
-
-    # Display Questions if available
+    # Display Questions
     if st.session_state.prelims_questions:
         st.info(f"📋 **{len(st.session_state.prelims_questions)} Questions Loaded** for {subject} ({years[0]}–{years[1]})")
         
         for idx, q in enumerate(st.session_state.prelims_questions, 1):
-            with st.container(border=True):
-                st.markdown(f"#### **Question {idx}** <span style='font-size:0.85rem; color:#38bdf8; float:right;'>UPSC {q['year']}</span>", unsafe_allow_html=True)
-                st.markdown(f"**{q['question']}**")
-                
-                options_dict = q.get("options", {})
-                options_list = [f"{key}: {val}" for key, val in options_dict.items()]
-                
-                # Pre-select previous choice if available
-                current_choice = st.session_state.user_answers.get(q['id'])
-                default_index = None
-                if current_choice:
-                    for i, opt in enumerate(options_list):
-                        if opt.startswith(current_choice):
-                            default_index = i
-                            break
+            st.markdown('<div class="quiz-card">', unsafe_allow_html=True)
+            st.markdown(f"#### **Question {idx}** <span style='font-size:0.85rem; color:#38bdf8; float:right; font-weight:700;'>UPSC {q['year']}</span>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 1.05rem; font-weight: 600; margin-bottom: 12px;'>{q['question']}</p>", unsafe_allow_html=True)
+            
+            options_dict = q.get("options", {})
+            options_list = [f"{key}: {val}" for key, val in options_dict.items()]
+            
+            current_choice = st.session_state.user_answers.get(q['id'])
+            default_index = None
+            if current_choice:
+                for i, opt in enumerate(options_list):
+                    if opt.startswith(current_choice):
+                        default_index = i
+                        break
 
-                selected_opt = st.radio(
-                    "Select Option:",
-                    options=options_list,
-                    index=default_index,
-                    key=f"q_radio_{q['id']}"
-                )
-                
-                if selected_opt:
-                    opt_letter = selected_opt.split(":")[0].strip()
-                    st.session_state.user_answers[q['id']] = opt_letter
+            selected_opt = st.radio(
+                "Select Option:",
+                options=options_list,
+                index=default_index,
+                key=f"q_radio_{q['id']}"
+            )
+            
+            if selected_opt:
+                opt_letter = selected_opt.split(":")[0].strip()
+                st.session_state.user_answers[q['id']] = opt_letter
 
-                # Show solution if submitted or expanded
-                with st.expander("💡 View Explanation & Solution"):
-                    st.markdown(f"**Correct Answer:** Option `{q.get('correct_option', 'N/A')}`")
-                    st.write(q.get("explanation", "No detailed explanation available."))
-
-        st.write("")
+            st.write("")
+            with st.expander("💡 View Explanation & Solution"):
+                st.markdown(f"**Correct Answer:** Option <span style='color: #10b981; font-weight: 700;'>{q.get('correct_option', 'N/A')}</span>", unsafe_allow_html=True)
+                st.write(q.get("explanation", "No detailed explanation available."))
+            
+            st.markdown('</div>', unsafe_allow_html=True)
 
         # Submit & Score Controls
         col_s1, col_s2 = st.columns([2, 1])
@@ -616,7 +669,7 @@ elif st.session_state.active_page == "Prelims PYQ Quiz":
             st.markdown(f"""
             <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 18px; border-radius: 12px; text-align: center; margin-top: 15px;">
                 <h2 style="color: #10b981; margin: 0;">🎯 Quiz Completed!</h2>
-                <h3 style="margin: 8px 0 0 0;">Score: {score} / {total} ({percentage}%)</h3>
+                <h3 style="margin: 8px 0 0 0; color: #f8fafc;">Score: {score} / {total} ({percentage}%)</h3>
             </div>
             """, unsafe_allow_html=True)
 
